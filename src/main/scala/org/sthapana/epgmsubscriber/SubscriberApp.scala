@@ -6,7 +6,7 @@ object SubscriberApp {
   def main(args: Array[String]): Unit = {
 
     val QUEUE_NAME = "hello"
-    val channel = Channel("localhost",QUEUE_NAME)
+    val channel = ChannelFactory("localhost",QUEUE_NAME)
     val az = AzureDocumentDB("https://epgm.documents.azure.com:443/",
       "JzmoDSMDC7BoTPzkA0QdeEyI4WJJSGDyaSH83n8yqckxkRRjHW8U8xJbJq7ivYEXaaGNzaIzvSUQg2tRZ06xfA==",
       "epgm-db","log_data")
