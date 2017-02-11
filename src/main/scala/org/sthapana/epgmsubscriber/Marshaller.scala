@@ -1,10 +1,10 @@
 package org.sthapana.epgmsubscriber
 
 object Marshaller {
-  def apply(record: Record): LogData = {
+  def apply(record: Record): LogEntry = {
     val map = record.toMap
-    LogData(
-      map("anganwadicode"),
+    LogEntry(
+      map("aanganwadicode"),
       map("childcode"),
       map("weight"),
       map("height"),
@@ -16,15 +16,15 @@ object Marshaller {
       map("year"),
       map("wasting"),
       map("stunting"),
-      map("min"),
-      map("hour")
+      map("minutes"),
+      map("hours")
     )
   }
 }
 
 
-case class LogData(
-anganwadicode:String,
+case class LogEntry(
+aanganwadicode:String,
 childcode:String,
 weight:String,
 height:String,
@@ -36,5 +36,5 @@ month:String,
 year:String,
 wasting:String,
 stunting:String,
-min:String,
-hour:String)
+minutes:String,
+hours:String)

@@ -1,5 +1,7 @@
 package org.sthapana.epgmsubscriber
 
+import scala.annotation.tailrec
+
 case class RecordSchema(schema: Schema) {
 
 
@@ -9,6 +11,7 @@ case class RecordSchema(schema: Schema) {
     else Option.empty
   }
 
+  @tailrec
   private [this] def applySchema(rawRecord: String,s:Schema,acc:Record):Record =
     if(rawRecord.isEmpty) acc
     else {
