@@ -10,7 +10,7 @@ class AzureDocumentDBTest {
       "JzmoDSMDC7BoTPzkA0QdeEyI4WJJSGDyaSH83n8yqckxkRRjHW8U8xJbJq7ivYEXaaGNzaIzvSUQg2tRZ06xfA==",
       "epgm-db","log_data")
     val data =
-      List("anganwadicode" -> "12345678911",
+      List("aanganwadicode" -> "12345678911",
         "childcode" -> "021",
         "weight" -> "065650",
         "height" -> "0169",
@@ -22,8 +22,8 @@ class AzureDocumentDBTest {
         "year" -> "16",
         "wasting" -> "7",
         "stunting" -> "0",
-        "min" -> "46",
-        "hour" -> "14")
+        "minutes" -> "46",
+        "hours" -> "14")
     //when
 
     print(az.insert(data))
