@@ -6,9 +6,8 @@ class AzureDocumentDBTest {
   @Test
   def shouldInsertRecordToAzureDB(): Unit = {
     //given
-    val az = AzureDocumentDB("https://epgm.documents.azure.com:443/",
-      "JzmoDSMDC7BoTPzkA0QdeEyI4WJJSGDyaSH83n8yqckxkRRjHW8U8xJbJq7ivYEXaaGNzaIzvSUQg2tRZ06xfA==",
-      "epgm-db","log_data")
+    val az = AzureDocumentDB("", "", "","")
+
     val data =
       List("aanganwadicode" -> "12345678911",
         "childcode" -> "021",

@@ -7,9 +7,7 @@ object SubscriberApp {
 
     val QUEUE_NAME = "hello"
     val channel = ChannelFactory("localhost",QUEUE_NAME)
-    val az = AzureDocumentDB("https://epgm.documents.azure.com:443/",
-      "JzmoDSMDC7BoTPzkA0QdeEyI4WJJSGDyaSH83n8yqckxkRRjHW8U8xJbJq7ivYEXaaGNzaIzvSUQg2tRZ06xfA==",
-      "epgm-db","log_data")
+    val az = AzureDocumentDB("", "", "","")
 
     val consumer = new DefaultConsumer(channel) {
       override def handleDelivery(consumerTag:String, envelope:Envelope, properties:AMQP.BasicProperties, body:Array[Byte]): Unit = {
