@@ -69,14 +69,15 @@ case class RedisConnector(hostName:String, portNumber:Int) {
   def getMonthWiseConsolidatedRecord(code:String): MonthWiseConsolidatedEntity = {
     val record = redisClient.hmget[String,String]("monthwise:" + code,
       "januarycount", "februarycount", "marchcount", "aprilcount", "maycount", "junecount",
-      "julycount", "augustcount", "septembercount", "octobercount", "novembercount", "decembercount")
+      "julycount", "augustcount", "septembercount", "octobercount", "novembercount", "decembercount", "currentmonth", "currentyear")
     MonthWiseConsolidatedEntity(code,
       extractValue("januarycount", record), extractValue("februarycount", record),
       extractValue("marchcount", record), extractValue("aprilcount", record),
       extractValue("maycount", record), extractValue("junecount", record),
       extractValue("julycount", record), extractValue("augustcount", record),
       extractValue("septembercount", record), extractValue("octobercount", record),
-      extractValue("novembercount", record), extractValue("decembercount", record))
+      extractValue("novembercount", record), extractValue("decembercount", record),
+      extractValue("currentmonth", record), extractValue("currentyear", record))
   }
 
   def deleteMonthWiseConsolidatedRecord(code:String): Unit = {
@@ -90,7 +91,8 @@ case class RedisConnector(hostName:String, portNumber:Int) {
         "maycount" -> monthWiseConsolidatedEntity.may, "junecount" -> monthWiseConsolidatedEntity.jun,
       "julycount" -> monthWiseConsolidatedEntity.jul, "augustcount" -> monthWiseConsolidatedEntity.aug,
       "septembercount" -> monthWiseConsolidatedEntity.sep, "octobercount" -> monthWiseConsolidatedEntity.oct,
-      "novembercount" -> monthWiseConsolidatedEntity.nov, "decembercount" -> monthWiseConsolidatedEntity.dec))
+      "novembercount" -> monthWiseConsolidatedEntity.nov, "decembercount" -> monthWiseConsolidatedEntity.dec,
+        "currentmonth" -> monthWiseConsolidatedEntity.currmonth, "currentyear" -> monthWiseConsolidatedEntity.curryear))
   }
 
 }
