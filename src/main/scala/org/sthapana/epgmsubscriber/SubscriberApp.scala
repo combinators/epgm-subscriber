@@ -1,16 +1,19 @@
 package org.sthapana.epgmsubscriber
 
+import java.time.temporal.ChronoUnit
+import java.time.{LocalDate, Month}
+
 import com.rabbitmq.client.{AMQP, DefaultConsumer, Envelope}
 
 object SubscriberApp {
   def main(args: Array[String]): Unit = {
 
     val QUEUE_NAME = "hello"
-    val channel = ChannelFactory("localhost",QUEUE_NAME)
-    val az = AzureDocumentDB("", "", "","")
+    val channel = ChannelFactory("localhost", QUEUE_NAME)
+    val az = AzureDocumentDB("", "", "", "")
 
     val consumer = new DefaultConsumer(channel) {
-      override def handleDelivery(consumerTag:String, envelope:Envelope, properties:AMQP.BasicProperties, body:Array[Byte]): Unit = {
+      override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
         val rawData = new String(body, "UTF-8")
         SchemaFactory.type1.apply(rawData) match {
           case Some(log) => insert(log)
@@ -19,15 +22,24 @@ object SubscriberApp {
       }
 
       def insert(record: Record): Unit = {
-        try{
+        try {
           az.insert(record)
-        }catch {
+        } catch {
           case e: Exception => e.printStackTrace()
         }
 
       }
-    }
 
-    channel.basicConsume(QUEUE_NAME, true, consumer)
+      def informAggregater(record: Record): Unit = {
+        try {
+          az.getPreviousRecord(record)
+        } catch {
+          case e: Exception => e.printStackTrace()
+        }
+
+        channel.basicConsume(QUEUE_NAME, true, consumer)
+      }
+    }
   }
 }
+

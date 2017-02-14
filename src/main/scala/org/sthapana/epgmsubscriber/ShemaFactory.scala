@@ -2,7 +2,11 @@ package org.sthapana.epgmsubscriber
 
 object SchemaFactory {
   def type1:RecordSchema = RecordSchema(List(
-    "aanganwadicode" -> 11,
+    "statecode"->2,
+    "districtcode"->3,
+    "projectcode"->2,
+    "sectorcode"->2,
+    "aanganwadicode" -> 2,
     "childcode" -> 3,
     "weight" -> 6,
     "height" -> 4,
