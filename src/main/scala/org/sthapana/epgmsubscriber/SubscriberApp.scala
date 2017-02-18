@@ -9,7 +9,7 @@ object SubscriberApp {
 
       val QUEUE_NAME = "epgm_logdata"
       val channel = ChannelFactory("localhost", QUEUE_NAME)
-      val az = AzureDocumentDB("https://epgm.documents.azure.com:443/", "JzmoDSMDC7BoTPzkA0QdeEyI4WJJSGDyaSH83n8yqckxkRRjHW8U8xJbJq7ivYEXaaGNzaIzvSUQg2tRZ06xfA==", "epgm-db", "log_data")
+      val az = AzureDocumentDB("https://epgm.documents.azure.com:443/", "Bhn3zf9QiYGzgJoiJByEHeByBBHkzTsRHnqH0HcNO0shAIyC7yUGEokAsB507XmBJruTBSxMTpHONjG6xlb4Tg==", "thewall", "tyrion")
 
 //    val record=SchemaFactory.type1.apply("275090101010340656500169002300150117704614").get
 //    az.getPreviousRecord(record)

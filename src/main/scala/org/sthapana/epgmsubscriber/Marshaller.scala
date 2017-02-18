@@ -4,6 +4,7 @@ object Marshaller {
   def apply(record: Record): LogEntry = {
     val map = record.toMap
     LogEntry(
+      map("doctype"),
       map("statecode"),
       map("districtcode"),
       map("projectcode"),
@@ -39,6 +40,7 @@ object Marshaller {
 
 
 case class LogEntry(
+doctype:String,
 statecode:String,
 districtcode:String,
 projectcode:String,
