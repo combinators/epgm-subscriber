@@ -25,9 +25,8 @@ class AzureDocumentDB(host: String, password: String,db:String,collection:String
     println(aanganwadiCode)
     println(childCode)
 
-    val results = documentClient.queryDocuments("dbs/" + db + "/colls/" + "log_data",
-      //      "SELECT * FROM myCollection",
-      "SELECT * FROM myCollection where myCollection.aanganwadicode=\"" + aanganwadiCode + "\" and myCollection.childcode=\"" + childCode + "\" order by myCollection.recordnumber DESC",
+    val results = documentClient.queryDocuments("dbs/" + db + "/colls/" + collection,
+      "SELECT * FROM myCollection where myCollection.doctype=\"child\"  and myCollection.aanganwadicode=\"" + aanganwadiCode + "\" and myCollection.childcode=\"" + childCode + "\" order by myCollection.recordnumber DESC",
       null).getQueryIterable().toList;
 
     if (results.size() == 0) {
@@ -53,7 +52,7 @@ class AzureDocumentDB(host: String, password: String,db:String,collection:String
   private def insertNewRecord(record: Record, results: Document) = {
     val rcordCount: Int = Integer.parseInt(results.get("recordnumber").toString)
     val currentAge=getAgeInMonths(Integer.parseInt(results.get("yearofbirth").toString),Integer.parseInt(results.get("monthofbirth").toString),Integer.parseInt(results.get("dayofbirth").toString))
-    val previousRecord=List(("age",currentAge.toString),("recordnumber", (rcordCount + 1).toString),("dayofbirth", results.get("dayofbirth").toString), ("monthofbirth", results.get("monthofbirth").toString), ("yearofbirth", results.get("yearofbirth").toString), ("address", results.get("address").toString), ("sex", results.get("sex").toString), ("name", results.get("name").toString), ("fathername", results.get("fathername").toString),("category",results.get("category").toString))
+    val previousRecord=List(("doctype","log"),("age",currentAge.toString),("recordnumber", (rcordCount + 1).toString),("dayofbirth", results.get("dayofbirth").toString), ("monthofbirth", results.get("monthofbirth").toString), ("yearofbirth", results.get("yearofbirth").toString), ("address", results.get("address").toString), ("sex", results.get("sex").toString), ("name", results.get("name").toString), ("fathername", results.get("fathername").toString),("category",results.get("category").toString))
 
     insert(record ++ previousRecord)
     print("new record inserted in log data")
@@ -81,7 +80,7 @@ class AzureDocumentDB(host: String, password: String,db:String,collection:String
             println("fetched from beneficiary master data" + results.get(0))
             val currentDoc = results.get(0)
             val age = getAgeInMonths(Integer.parseInt(currentDoc.get("yearofbirth").toString), Integer.parseInt(currentDoc.get("monthofbirth").toString), Integer.parseInt(currentDoc.get("dayofbirth").toString))
-            List(("age", age.toString), ("dayofbirth", currentDoc.get("dayofbirth").toString), ("monthofbirth", currentDoc.get("monthofbirth").toString), ("yearofbirth", currentDoc.get("yearofbirth").toString), ("recordnumber", "1"), ("address", currentDoc.get("address").toString), ("category", currentDoc.get("category").toString), ("sex", currentDoc.get("sex").toString), ("name", currentDoc.get("name").toString), ("fathername", currentDoc.get("fathername").toString))
+            List(("doctype","log"),("age", age.toString), ("dayofbirth", currentDoc.get("dayofbirth").toString), ("monthofbirth", currentDoc.get("monthofbirth").toString), ("yearofbirth", currentDoc.get("yearofbirth").toString), ("recordnumber", "1"), ("address", currentDoc.get("address").toString), ("category", currentDoc.get("category").toString), ("sex", currentDoc.get("sex").toString), ("name", currentDoc.get("name").toString), ("fathername", currentDoc.get("fathername").toString))
           }
       else List()
 
