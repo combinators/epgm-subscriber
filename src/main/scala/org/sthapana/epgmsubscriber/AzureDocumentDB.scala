@@ -4,9 +4,10 @@ package org.sthapana.epgmsubscriber
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-
 import com.google.gson.Gson
 import com.microsoft.azure.documentdb._
+import org.sthapana.aggregation.dataobjects.UpdateEntity
+import org.sthapana.aggregation.engine.ProcessingEngine
 
 class AzureDocumentDB(host: String, password: String,db:String,collection:String) {
   val documentClient = new DocumentClient(host, password, ConnectionPolicy.GetDefault(), ConsistencyLevel.Session)
@@ -21,35 +22,44 @@ class AzureDocumentDB(host: String, password: String,db:String,collection:String
     val aanganwadiCode = recordAsMap("aanganwadicode")
     val childCode = recordAsMap("childcode")
 
-    println("aanganwadicode is :" + aanganwadiCode)
+    println(aanganwadiCode)
+    println(childCode)
+
     val results = documentClient.queryDocuments("dbs/" + db + "/colls/" + "log_data",
       //      "SELECT * FROM myCollection",
-      "SELECT * FROM myCollection where myCollection.aanganwadicode=\"" + aanganwadiCode + "\" and myCollection.childcode=\"" + childCode + "\" order by myCollection.recordcount DESC",
+      "SELECT * FROM myCollection where myCollection.aanganwadicode=\"" + aanganwadiCode + "\" and myCollection.childcode=\"" + childCode + "\" order by myCollection.recordnumber DESC",
       null).getQueryIterable().toList;
 
     if (results.size() == 0) {
-      insertFirstRecord(record, recordAsMap)
+      println("not present in log data ")
+      insertFirstRecord(record)
     }
     else {
+      println("present in log data ")
       insertNewRecord(record, results.get(0))
     }
 
-    for (i <- 0 to results.size() - 1) {
-      println("record count " + results.get(i).get("recordcount"))
-
-    }
-    println("size" + results.size())
-
+//
+//
+//    val results1 = documentClient.queryDocuments("dbs/" + db + "/colls/" + "log_data",
+//      //      "SELECT * FROM myCollection",
+//      "SELECT * FROM myCollection",
+//      null).getQueryIterable().toList;
+//
+//    print("total size"+results1.size())
 
   }
 
   private def insertNewRecord(record: Record, results: Document) = {
-    val rcordCount: Int = Integer.parseInt(results.get("recordcount").toString)
+    val rcordCount: Int = Integer.parseInt(results.get("recordnumber").toString)
     val currentAge=getAgeInMonths(Integer.parseInt(results.get("yearofbirth").toString),Integer.parseInt(results.get("monthofbirth").toString),Integer.parseInt(results.get("dayofbirth").toString))
-    val sampleRecord=List(("age",currentAge.toString),("recordcount", (rcordCount + 1).toString),("dayofbirth", results.get("dayofbirth").toString), ("monthofbirth", results.get("monthofbirth").toString), ("yearofbirth", results.get("yearofbirth").toString), ("address", results.get("address").toString), ("sex", results.get("sex").toString), ("name", results.get("namme").toString), ("fathername", results.get("fathername").toString),("category",results.get("category").toString))
+    val previousRecord=List(("age",currentAge.toString),("recordnumber", (rcordCount + 1).toString),("dayofbirth", results.get("dayofbirth").toString), ("monthofbirth", results.get("monthofbirth").toString), ("yearofbirth", results.get("yearofbirth").toString), ("address", results.get("address").toString), ("sex", results.get("sex").toString), ("name", results.get("name").toString), ("fathername", results.get("fathername").toString),("category",results.get("category").toString))
 
-    insert(record ++ sampleRecord)
-
+    insert(record ++ previousRecord)
+    print("new record inserted in log data")
+    val recordAsMap=record.toMap
+    val upd=new UpdateEntity(recordAsMap("statecode"),recordAsMap("districtcode"),recordAsMap("projectcode"),recordAsMap("sectorcode"),recordAsMap("aanganwadicode"),recordAsMap("whounderweight"),results.get("whounderweight").toString,results.get("sex").toString,currentAge.toString,results.get("age").toString,recordAsMap("month"),recordAsMap("year"))
+    new ProcessingEngine().updateDB(upd)
 
 
   }
@@ -57,41 +67,31 @@ class AzureDocumentDB(host: String, password: String,db:String,collection:String
 
 
 
-  private def insertFirstRecord(record: Record, recordAsMap: Map[String, String]) = {
+  private def insertFirstRecord(record: Record) = {
 
     def getRecordFromMasterData(): Record = {
 
-      val rec : List[(String, String)]=List()
-      try {
-        val results = documentClient.queryDocuments("dbs/" + db + "/colls/" + "log_data",
+      val recordAsMap=record.toMap
+
+
+        val results = documentClient.queryDocuments("dbs/" + db + "/colls/" + "beneficiary_master_data",
                   "SELECT * FROM myCollection where myCollection.aanganwadicode=\""+recordAsMap("aanganwadicode")+"\" and myCollection.childcode=\""+recordAsMap("childcode")+"\"",
           null).getQueryIterable().toList;
-        if(results.size()>0) {
-          val currentDoc = results.get(0)
-          val date: Array[String] = currentDoc.get("dateofbirth").toString.split("/")
-          val age=getAgeInMonths(Integer.parseInt(date(2)),Integer.parseInt(date(0)),Integer.parseInt(date(1)))
-          rec ++ List(("age",age.toString),("dayofbirth", date(1)), ("monthofbirth", date(0)), ("yearofbirth", date(2)), ("recordcount", "1"), ("address", currentDoc.get("address").toString),("category",currentDoc.get("category").toString) ,("sex", currentDoc.get("sex").toString), ("name", currentDoc.get("name").toString), ("fathername", currentDoc.get("fathername").toString))
-        }
-      } catch {
-        case e: DocumentClientException => {
-          println("Error occured while fetching master data for child code:"+recordAsMap("childcode").toString+" and aanganwadi:"+recordAsMap("aanganwadicode")+" = "+e.getMessage)
-        }
-        case e:NoSuchElementException=>{
-          println("Error while searching for element:"+e.getMessage)
-        }
-      }
-      rec
+          if(!results.isEmpty) {
+            println("fetched from beneficiary master data" + results.get(0))
+            val currentDoc = results.get(0)
+            val age = getAgeInMonths(Integer.parseInt(currentDoc.get("yearofbirth").toString), Integer.parseInt(currentDoc.get("monthofbirth").toString), Integer.parseInt(currentDoc.get("dayofbirth").toString))
+            List(("age", age.toString), ("dayofbirth", currentDoc.get("dayofbirth").toString), ("monthofbirth", currentDoc.get("monthofbirth").toString), ("yearofbirth", currentDoc.get("yearofbirth").toString), ("recordnumber", "1"), ("address", currentDoc.get("address").toString), ("category", currentDoc.get("category").toString), ("sex", currentDoc.get("sex").toString), ("name", currentDoc.get("name").toString), ("fathername", currentDoc.get("fathername").toString))
+          }
+      else List()
+
     }
-
-
     val recordFromMaster=getRecordFromMasterData()
-
-    insert(record++recordFromMaster)
-
-
-
-
-
+    val combinedRecord=record++recordFromMaster
+    insert(combinedRecord)
+    val combinedRecordAsMap=combinedRecord.toMap
+    val upd=new UpdateEntity(combinedRecordAsMap("statecode"),combinedRecordAsMap("districtcode"),combinedRecordAsMap("projectcode"),combinedRecordAsMap("sectorcode"),combinedRecordAsMap("aanganwadicode"),combinedRecordAsMap("whounderweight"),"-1",combinedRecordAsMap("sex"),combinedRecordAsMap("age"),"-1",combinedRecordAsMap("month"),combinedRecordAsMap("year"))
+    new ProcessingEngine().updateDB(upd)
   }
 
 

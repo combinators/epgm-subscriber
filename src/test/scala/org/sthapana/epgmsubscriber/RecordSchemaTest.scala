@@ -10,6 +10,7 @@ class RecordSchemaTest {
   def shouldValidateRecordStringWithGivenSchema(): Unit = {
     //given
     val sampleRecord = "123456789110210656500169002300151216704614"
+
     val schema = SchemaFactory.type1
 
     //when

@@ -9,7 +9,7 @@ import org.sthapana.aggregation.utils.{AgeWiseConsolidationUtils, GenderWiseCons
 class ProcessingEngine {
 
   def updateDB(updateEntity: UpdateEntity): Unit = {
-    val redisClient = RedisConnector("localhost",6379)
+    val redisClient = RedisConnector("epgm-webapp.centralindia.cloudapp.azure.com",6379)
 
     new GradeWiseConsolidationUtils().updateGradeWiseConsolidated(redisClient,updateEntity.stateCode,
       updateEntity.currentGrade,updateEntity.previousGrade)
