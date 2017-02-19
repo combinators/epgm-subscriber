@@ -17,7 +17,7 @@ case class RedisConnector(hostName:String, portNumber:Int) {
   def getGradeWiseConsolidatedRecord(code:String): GradeWiseConsolidatedEntity = {
     val record = redisClient.hmget[String,String]("gradewise:" + code,
       "suwcount", "muwcount", "normalcount", "totalcount")
-    GradeWiseConsolidatedEntity(code, extractValue("suwcount", record), extractValue("muwcount", record),
+    GradeWiseConsolidatedEntity("dashboard", code, extractValue("suwcount", record), extractValue("muwcount", record),
       extractValue("normalcount", record), extractValue("totalcount", record))
   }
 
@@ -34,7 +34,7 @@ case class RedisConnector(hostName:String, portNumber:Int) {
   def getGenderWiseConsolidatedRecord(code:String): GenderWiseConsolidatedEntity = {
     val record = redisClient.hmget[String,String]("genderwise:" + code,
       "malecount", "femalecount")
-    GenderWiseConsolidatedEntity(code, extractValue("malecount", record)
+    GenderWiseConsolidatedEntity("dashboard", code, extractValue("malecount", record)
       , extractValue("femalecount", record))
   }
 
@@ -50,7 +50,7 @@ case class RedisConnector(hostName:String, portNumber:Int) {
   def getAgeWiseConsolidatedRecord(code:String): AgeWiseConsolidatedEntity = {
     val record = redisClient.hmget[String,String]("agewise:" + code,
       "zerotoonecount", "onetotwocount", "twotothreecount", "threetofourcount", "fourtofivecount", "fivetosixcount")
-    AgeWiseConsolidatedEntity(code, extractValue("zerotoonecount", record), extractValue("onetotwocount", record),
+    AgeWiseConsolidatedEntity("dashboard", code, extractValue("zerotoonecount", record), extractValue("onetotwocount", record),
       extractValue("twotothreecount", record), extractValue("threetofourcount", record),
       extractValue("fourtofivecount", record), extractValue("fivetosixcount", record))
   }
@@ -70,7 +70,7 @@ case class RedisConnector(hostName:String, portNumber:Int) {
     val record = redisClient.hmget[String,String]("monthwise:" + code,
       "januarycount", "februarycount", "marchcount", "aprilcount", "maycount", "junecount",
       "julycount", "augustcount", "septembercount", "octobercount", "novembercount", "decembercount", "currentmonth", "currentyear")
-    MonthWiseConsolidatedEntity(code,
+    MonthWiseConsolidatedEntity("dashboard", code,
       extractValue("januarycount", record), extractValue("februarycount", record),
       extractValue("marchcount", record), extractValue("aprilcount", record),
       extractValue("maycount", record), extractValue("junecount", record),

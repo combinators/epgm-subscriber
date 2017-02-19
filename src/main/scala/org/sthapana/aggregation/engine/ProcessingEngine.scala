@@ -9,21 +9,34 @@ import org.sthapana.aggregation.utils.{AgeWiseConsolidationUtils, GenderWiseCons
 class ProcessingEngine {
 
   def updateDB(updateEntity: UpdateEntity): Unit = {
-    val redisClient = RedisConnector("localhost",6379)
+    val docDbConnector = new DocumentDbConnector(
+      "https://epgm.documents.azure.com:443/",
+      "SlhyMCNEuU55HklqqibVpNAqi58tN5ZcBjYznR2SLUxNOsjNaEH7JT3kLsaB6K9mRFMtTrl10bx3oJYm9DfsAA==",
+      "thewall","tyrion")
 
-    new GradeWiseConsolidationUtils().updateGradeWiseConsolidated(redisClient,updateEntity.stateCode,
+    val gradeEntity = new GradeWiseConsolidationUtils().updateGradeWiseConsolidated(docDbConnector,updateEntity.stateCode,
       updateEntity.currentGrade,updateEntity.previousGrade)
 
-    new GenderWiseConsolidationUtils().updateGenderWiseConsolidated(redisClient,updateEntity.stateCode,
+    val genderEntity = new GenderWiseConsolidationUtils().updateGenderWiseConsolidated(docDbConnector,updateEntity.stateCode,
       updateEntity.gender,updateEntity.currentGrade,updateEntity.previousGrade)
 
-    new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(redisClient,updateEntity.stateCode,
+    val ageEntity = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(docDbConnector,updateEntity.stateCode,
       updateEntity.currentAge,updateEntity.previousAge,
       updateEntity.currentGrade,updateEntity.previousGrade)
 
-    new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(redisClient,updateEntity.stateCode,
+    val monthEntity = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(docDbConnector,updateEntity.stateCode,
       updateEntity.currentMonth,updateEntity.currentYear,
       updateEntity.currentGrade,updateEntity.previousGrade)
+
+    val tyrionEntity = TyrionEntity("dashboard",updateEntity.stateCode,gradeEntity.suw,gradeEntity.muw,gradeEntity.normal,
+      gradeEntity.total,genderEntity.male,genderEntity.female,ageEntity.zeroToOne,ageEntity.oneToTwo,ageEntity.twoToThree,ageEntity.threeToFour,
+      ageEntity.fourToFive,ageEntity.fiveToSix,monthEntity.jan,monthEntity.feb,monthEntity.mar,monthEntity.apr,monthEntity.may,monthEntity.jun,
+      monthEntity.jul,monthEntity.aug,monthEntity.sep,monthEntity.oct,monthEntity.nov,monthEntity.dec,monthEntity.currmonth,monthEntity.curryear)
+
+    docDbConnector.deleteConsolidatedRecord(updateEntity.stateCode)
+
+    docDbConnector.insertConsolidatedRecord(tyrionEntity)
+
   }
 
 }
