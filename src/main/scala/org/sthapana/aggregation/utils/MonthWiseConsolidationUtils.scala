@@ -6,13 +6,13 @@ import org.sthapana.aggregation.engine.{DocumentDbConnector, RedisConnector}
 /**
   * Created by chocoklate on 14/2/17.
   */
-class MonthWiseConsolidationUtils {
+class MonthWiseConsolidationUtils() {
 
-  def updateMonthWiseConsolidated(dc:DocumentDbConnector, code: String,
+  def updateMonthWiseConsolidated(me: MonthWiseConsolidatedEntity,
                                   currentMonth: String, currentYear: String,
                                   currentGrade: String, previousGrade: String):MonthWiseConsolidatedEntity = {
 
-    val monthWiseConsolidatedEntity = dc.getMonthWiseConsolidatedRecord(code)
+    val monthWiseConsolidatedEntity = me
 //    dc.deleteMonthWiseConsolidatedRecord(code)
     getUpdatedMonthWiseConsolidatedEntity(
       monthWiseConsolidatedEntity,currentMonth,currentYear,currentGrade,previousGrade)

@@ -21,12 +21,24 @@ class DocumentDbConnector(host:String, masterKey:String, databaseId:String, coll
     record.head.get(key).asInstanceOf[String]
   }
 
+  def getConsolidatedRecord(code:String) = {
+    val r = documentClient.queryDocuments(
+      "dbs/"+databaseId+"/colls/"+collectionId,
+      "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" and tyrion.code=\""+code+"\"",
+      null).getQueryIterable().asScala.headOption
+    println(r.size)
+    (r  match {
+      case None => None
+      case Some(x) => Some(x.getHashMap.asScala.map(x => (x._1,x._2.toString)).toMap)
+    }, r)
+  }
+
   def getGradeWiseConsolidatedRecord(code:String): GradeWiseConsolidatedEntity = {
       record = documentClient.queryDocuments(
         "dbs/"+databaseId+"/colls/"+collectionId,
         "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" and tyrion.code=\""+code+"\"",
         null).getQueryIterable().asScala.toList
-    println(record)
+    println("getGradeWiseConsolidatedRecord ==> "+record)
       GradeWiseConsolidatedEntity("dashboard", code, extractValue("suwcount", record), extractValue("muwcount", record),
         extractValue("normalcount", record), extractValue("totalcount", record))
     }
@@ -47,6 +59,7 @@ class DocumentDbConnector(host:String, masterKey:String, databaseId:String, coll
         s"dbs/$databaseId/colls/$collectionId",
         "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" and tyrion.code=\""+code+"\"",
         null).getQueryIterable().asScala.toList
+      println("getGenderWiseConsolidatedRecord ====>"+record)
       GenderWiseConsolidatedEntity("dashboard", code, extractValue("malecount", record)
         , extractValue("femalecount", record))
     }
@@ -67,6 +80,7 @@ class DocumentDbConnector(host:String, masterKey:String, databaseId:String, coll
         s"dbs/$databaseId/colls/$collectionId",
         "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" and tyrion.code=\""+code+"\"",
         null).getQueryIterable().asScala.toList
+      println("getAgeWiseConsolidatedRecord ====>"+record)
       AgeWiseConsolidatedEntity("dashboard", code, extractValue("zerotoonecount", record), extractValue("onetotwocount", record),
         extractValue("twotothreecount", record), extractValue("threetofourcount", record),
         extractValue("fourtofivecount", record), extractValue("fivetosixcount", record))
@@ -88,6 +102,7 @@ class DocumentDbConnector(host:String, masterKey:String, databaseId:String, coll
         s"dbs/$databaseId/colls/$collectionId",
         "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" and tyrion.code=\""+code+"\"",
         null).getQueryIterable().asScala.toList
+      println("getMonthWiseConsolidatedRecord ====>"+record)
       MonthWiseConsolidatedEntity("dashboard", code,
         extractValue("januarycount", record), extractValue("februarycount", record),
         extractValue("marchcount", record), extractValue("aprilcount", record),
@@ -109,8 +124,8 @@ class DocumentDbConnector(host:String, masterKey:String, databaseId:String, coll
 //        entityDocument, null,false).getResource()
 //    }
 
-      def deleteConsolidatedRecord(code:String): Unit = {
-        documentClient.deleteDocument(record.head.getSelfLink(), null)
+      def deleteConsolidatedRecord(code:String, r: Document): Unit = {
+        documentClient.deleteDocument(r.getSelfLink(), null)
       }
 
       def insertConsolidatedRecord(tyrionEntity: TyrionEntity): Unit = {

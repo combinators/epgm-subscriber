@@ -2,9 +2,7 @@ package org.sthapana.aggregation.engine
 
 import com.google.gson.Gson
 import com.microsoft.azure.documentdb.{ConnectionPolicy, ConsistencyLevel, Document, DocumentClient}
-import com.redis.RedisClient
 import org.junit.{Assert, Test}
-import org.junit.Assert._
 import org.sthapana.aggregation.dataobjects.{TyrionEntity, UpdateEntity}
 
 /**
@@ -72,7 +70,7 @@ class ProcessingEngineTest {
 //
     var someJson = new Gson().toJson(tyrionEntity);
     var someDocument = new Document(someJson)
-    documentClient.createDocument("dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID, someDocument, null,false).getResource();
+    //documentClient.createDocument("dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID, someDocument, null,false).getResource();
 
     val results1 = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
@@ -90,14 +88,4 @@ class ProcessingEngineTest {
   }
 
 }
-
-git add src/main/scala/org/sthapana/aggregation/dataobjects/Entity.scala
-git add src/main/scala/org/sthapana/aggregation/engine/ProcessingEngine.scala
-git add src/main/scala/org/sthapana/aggregation/engine/RedisConnector.scala
-git add src/main/scala/org/sthapana/aggregation/utils/AgeWiseConsolidationUtils.scala
-git add src/main/scala/org/sthapana/aggregation/utils/CommonUtils.scala
-git add src/main/scala/org/sthapana/aggregation/utils/GenderWiseConsolidationUtils.scala
-git add src/main/scala/org/sthapana/aggregation/utils/GradeWiseConsolidationUtils.scala
-git add src/main/scala/org/sthapana/aggregation/utils/MonthWiseConsolidationUtils.scala
-git add src/test/scala/org/sthapana/aggregation/engine/ProcessingEngineTest.scala
 

@@ -6,12 +6,12 @@ import org.sthapana.aggregation.engine.{DocumentDbConnector, RedisConnector}
 /**
   * Created by chocoklate on 14/2/17.
   */
-class GenderWiseConsolidationUtils {
+class GenderWiseConsolidationUtils() {
 
-  def updateGenderWiseConsolidated(dc:DocumentDbConnector, code: String, gender: String,
+  def updateGenderWiseConsolidated(ge: GenderWiseConsolidatedEntity, gender: String,
                                    currentGrade: String, previousGrade: String): GenderWiseConsolidatedEntity = {
 
-    val genderWiseConsolidatedEntity = dc.getGenderWiseConsolidatedRecord(code)
+    val genderWiseConsolidatedEntity = ge
 //    dc.deleteGenderWiseConsolidatedRecord(code)
     getUpdatedGenderWiseConsolidatedEntity(
       genderWiseConsolidatedEntity,gender,currentGrade,previousGrade)

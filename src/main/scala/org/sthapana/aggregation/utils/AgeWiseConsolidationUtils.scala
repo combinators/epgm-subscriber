@@ -6,13 +6,13 @@ import org.sthapana.aggregation.engine.{DocumentDbConnector, RedisConnector}
 /**
   * Created by chocoklate on 14/2/17.
   */
-class AgeWiseConsolidationUtils {
+class AgeWiseConsolidationUtils() {
 
-  def updateAgeWiseConsolidated(dc:DocumentDbConnector, code: String,
+  def updateAgeWiseConsolidated(ae: AgeWiseConsolidatedEntity,
                                 currentAge: String, previousAge: String,
                                 currentGrade: String, previousGrade: String):AgeWiseConsolidatedEntity = {
 
-    val ageWiseConsolidatedEntity = dc.getAgeWiseConsolidatedRecord(code)
+    val ageWiseConsolidatedEntity = ae
 //    dc.deleteAgeWiseConsolidatedRecord(code)
     getUpdatedAgeWiseConsolidatedEntity(
       ageWiseConsolidatedEntity,currentAge,previousAge,currentGrade,previousGrade)
