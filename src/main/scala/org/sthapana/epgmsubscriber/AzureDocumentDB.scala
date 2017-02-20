@@ -26,7 +26,7 @@ class AzureDocumentDB(host: String, password: String,db:String,collection:String
     println(childCode)
 
     val results = documentClient.queryDocuments("dbs/" + db + "/colls/" + collection,
-      "SELECT * FROM myCollection where myCollection.doctype=\"child\"  and myCollection.aanganwadicode=\"" + aanganwadiCode + "\" and myCollection.childcode=\"" + childCode + "\" order by myCollection.recordnumber DESC",
+      "SELECT * FROM myCollection where myCollection.doctype=\"log\"  and myCollection.aanganwadicode=\"" + aanganwadiCode + "\" and myCollection.childcode=\"" + childCode + "\" order by myCollection.recordnumber DESC",
       null).getQueryIterable().toList;
 
     if (results.size() == 0) {
@@ -58,6 +58,7 @@ class AzureDocumentDB(host: String, password: String,db:String,collection:String
     print("new record inserted in log data")
     val recordAsMap=record.toMap
     val upd=new UpdateEntity(recordAsMap("statecode"),recordAsMap("districtcode"),recordAsMap("projectcode"),recordAsMap("sectorcode"),recordAsMap("aanganwadicode"),recordAsMap("whounderweight"),results.get("whounderweight").toString,results.get("sex").toString,currentAge.toString,results.get("age").toString,recordAsMap("month"),recordAsMap("year"))
+    println(upd)
     new ProcessingEngine().updateDB(upd)
 
 
@@ -73,11 +74,11 @@ class AzureDocumentDB(host: String, password: String,db:String,collection:String
       val recordAsMap=record.toMap
 
 
-        val results = documentClient.queryDocuments("dbs/" + db + "/colls/" + "beneficiary_master_data",
-                  "SELECT * FROM myCollection where myCollection.aanganwadicode=\""+recordAsMap("aanganwadicode")+"\" and myCollection.childcode=\""+recordAsMap("childcode")+"\"",
+        val results = documentClient.queryDocuments("dbs/" + db + "/colls/" + collection,
+                  "SELECT * FROM myCollection where myCollection.doctype=\"child\" and myCollection.aanganwadicode=\""+recordAsMap("aanganwadicode")+"\" and myCollection.childcode=\""+recordAsMap("childcode")+"\"",
           null).getQueryIterable().toList;
           if(!results.isEmpty) {
-            println("fetched from beneficiary master data" + results.get(0))
+            println("fetched from beneficiary master data")
             val currentDoc = results.get(0)
             val age = getAgeInMonths(Integer.parseInt(currentDoc.get("yearofbirth").toString), Integer.parseInt(currentDoc.get("monthofbirth").toString), Integer.parseInt(currentDoc.get("dayofbirth").toString))
             List(("doctype","log"),("age", age.toString), ("dayofbirth", currentDoc.get("dayofbirth").toString), ("monthofbirth", currentDoc.get("monthofbirth").toString), ("yearofbirth", currentDoc.get("yearofbirth").toString), ("recordnumber", "1"), ("address", currentDoc.get("address").toString), ("category", currentDoc.get("category").toString), ("sex", currentDoc.get("sex").toString), ("name", currentDoc.get("name").toString), ("fathername", currentDoc.get("fathername").toString))
@@ -90,6 +91,7 @@ class AzureDocumentDB(host: String, password: String,db:String,collection:String
     insert(combinedRecord)
     val combinedRecordAsMap=combinedRecord.toMap
     val upd=new UpdateEntity(combinedRecordAsMap("statecode"),combinedRecordAsMap("districtcode"),combinedRecordAsMap("projectcode"),combinedRecordAsMap("sectorcode"),combinedRecordAsMap("aanganwadicode"),combinedRecordAsMap("whounderweight"),"-1",combinedRecordAsMap("sex"),combinedRecordAsMap("age"),"-1",combinedRecordAsMap("month"),combinedRecordAsMap("year"))
+    println(upd)
     new ProcessingEngine().updateDB(upd)
   }
 
@@ -98,7 +100,7 @@ class AzureDocumentDB(host: String, password: String,db:String,collection:String
   private def getAgeInMonths(year:Int,month:Int,day:Int) : Long={
     val start = LocalDate.of(year, month, day)
     val end = LocalDate.now()
-    ChronoUnit.MONTHS.between(start, end)
+    ChronoUnit.MONTHS.between(end, start)
   }
 
 

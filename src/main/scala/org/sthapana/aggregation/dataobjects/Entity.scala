@@ -30,3 +30,8 @@ case class TyrionEntity(doctype:String, code:String, suwcount:String,
                         maycount:String, junecount:String, julycount:String, augustcount:String,
                         septembercount:String, octobercount:String, novembercount:String,
                         decembercount:String, currentmonth:String, currentyear:String)
+
+case class MasterChildDataEntity(doctype:String, dayofbirth:String,monthofbirth:String,yearofbirth:String,
+                                 address:String,sex:String,recordnumber:String,childcode:String,
+                                 category:String,fathername:String,name:String,
+                                 aanganwadicode:String)

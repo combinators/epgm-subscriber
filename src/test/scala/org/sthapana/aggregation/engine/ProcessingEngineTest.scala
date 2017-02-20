@@ -1,9 +1,12 @@
 package org.sthapana.aggregation.engine
 
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+
 import com.google.gson.Gson
 import com.microsoft.azure.documentdb.{ConnectionPolicy, ConsistencyLevel, Document, DocumentClient}
 import org.junit.{Assert, Test}
-import org.sthapana.aggregation.dataobjects.{TyrionEntity, UpdateEntity}
+import org.sthapana.aggregation.dataobjects.{MasterChildDataEntity, TyrionEntity, UpdateEntity}
 
 /**
   * Created by chocoklate on 14/2/17.
@@ -20,7 +23,7 @@ class ProcessingEngineTest {
 //    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","1","2","M","10","-1","02","17")
 //    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","2","1","M","10","-1","02","17")
 //    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","0","2","M","10","-1","02","17")
-    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","0","1","M","10","-1","02","17")
+    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","2","-1","M","10","-1","02","17")
 //    rc.hmset("gradewise:27",Map("suwcount" -> "20","muwcount" -> "20","normalcount" -> "60", "totalcount" -> "100"))
 //    rc.hmset("genderwise:27",Map("malecount" -> "64","femalecount" -> "36"))
 //    rc.hmset("agewise:27",Map("zerotoonecount" -> "12","onetotwocount" -> "14","twotothreecount" -> "08", "threetofourcount" -> "22",
@@ -80,7 +83,7 @@ class ProcessingEngineTest {
     var someDocument = new Document(someJson)
     //documentClient.createDocument("dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID, someDocument, null,false).getResource();
 
-    val results1 = documentClient.queryDocuments(
+    /*val results1 = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
       "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" and tyrion.code=\"27\" ",
 //      "SELECT * FROM tyrion ",
@@ -91,9 +94,99 @@ class ProcessingEngineTest {
     Assert.assertEquals(expectedTotalCount,results1.get(0).get("totalcount"))
     Assert.assertEquals(expectedMaleCount,results1.get(0).get("malecount"))
     Assert.assertEquals(expectedAgeCount,results1.get(0).get("onetotwocount"))
-    Assert.assertEquals(expectedMonthCount,results1.get(0).get("februarycount"))
+    Assert.assertEquals(expectedMonthCount,results1.get(0).get("februarycount"))*/
 
   }
+
+  @Test
+  def itShouldGetMasterChildData(): Unit ={
+
+    val expectedMUWCount = "21"
+    val expectedTotalCount = "101"
+    val expectedMaleCount = "65"
+    val expectedAgeCount = "15"
+    val expectedMonthCount = "21"
+
+    val HOST = "https://epgm.documents.azure.com:443/"
+    val MASTER_KEY = "SlhyMCNEuU55HklqqibVpNAqi58tN5ZcBjYznR2SLUxNOsjNaEH7JT3kLsaB6K9mRFMtTrl10bx3oJYm9DfsAA=="
+    val DATABASE_ID = "thewall"
+    val COLLECTION_ID = "tyrion"
+
+    val documentClient = new DocumentClient(HOST,
+      MASTER_KEY, ConnectionPolicy.GetDefault(),
+      ConsistencyLevel.Session)
+/*
+
+
+    val tmp = documentClient.queryDocuments(
+      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+      "SELECT * FROM myCollection where myCollection.doctype=\"child\" and myCollection.aanganwadicode=\"27511010507\" " +
+        "and myCollection.childcode=\"041\"",
+      null).getQueryIterable().toList()
+
+    val currentDoc = tmp.get(0)
+    def getAgeInMonths(year:Int,month:Int,day:Int) : Long={
+      val start = LocalDate.of(year, month, day)
+      val end = LocalDate.now()
+      ChronoUnit.MONTHS.between(end, start)
+    }
+    val age = getAgeInMonths(Integer.parseInt(currentDoc.get("yearofbirth").toString), Integer.parseInt(currentDoc.get("monthofbirth").toString), Integer.parseInt(currentDoc.get("dayofbirth").toString))
+    //List(("doctype","log"),("age", age.toString), ("dayofbirth", currentDoc.get("dayofbirth").toString), ("monthofbirth", currentDoc.get("monthofbirth").toString), ("yearofbirth", currentDoc.get("yearofbirth").toString), ("recordnumber", "1"), ("address", currentDoc.get("address").toString), ("category", currentDoc.get("category").toString), ("sex", currentDoc.get("sex").toString), ("name", currentDoc.get("name").toString), ("fathername", currentDoc.get("fathername").toString))
+    val age1: Long = -9
+    println(getAgeInMonths(2017,11,27))
+    println(age1.toString)
+*/
+
+
+    val results1 = documentClient.queryDocuments(
+      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+      "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" ",
+      //      "SELECT * FROM tyrion ",
+      null).getQueryIterable().toList()
+
+    println("dashboard ===>"+results1)
+
+    val results2 = documentClient.queryDocuments(
+      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+      "SELECT * FROM tyrion where tyrion.doctype=\"log\" ",
+      //      "SELECT * FROM tyrion ",
+      null).getQueryIterable().toList()
+
+    println("log ===>"+results2)
+  }
+
+  @Test
+  def itShouldInserMasterChildRecord(): Unit ={
+      //given
+      val expectedMUWCount = "21"
+      val expectedTotalCount = "101"
+      val expectedMaleCount = "65"
+      val expectedAgeCount = "15"
+      val expectedMonthCount = "21"
+
+      val HOST = "https://epgm.documents.azure.com:443/"
+      val MASTER_KEY = "SlhyMCNEuU55HklqqibVpNAqi58tN5ZcBjYznR2SLUxNOsjNaEH7JT3kLsaB6K9mRFMtTrl10bx3oJYm9DfsAA=="
+      val DATABASE_ID = "thewall"
+      val COLLECTION_ID = "tyrion"
+
+      val documentClient = new DocumentClient(HOST,
+        MASTER_KEY, ConnectionPolicy.GetDefault(),
+        ConsistencyLevel.Session)
+
+    //when
+    val masterChildEntity = MasterChildDataEntity("child", "27","11","2017","","M","2","041","","N PANT",
+                            "SHRIKANT","27511010507")
+    val entityJson = new Gson().toJson(masterChildEntity)
+    val entityDocument = new Document(entityJson)
+
+    documentClient.createDocument(s"dbs/$DATABASE_ID/colls/$COLLECTION_ID",
+      entityDocument, null,false).getResource()
+    }
+
+/*  @Test
+  def itShouldUpdateDB(): Unit ={
+    new ProcessingEngine(UpdateEntity("27","511", "01", "05"))
+  }*/
 
 }
 
