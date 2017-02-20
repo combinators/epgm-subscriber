@@ -12,7 +12,15 @@ class ProcessingEngineTest {
   @Test
   def itShouldUpdateValues() = {
     //given
-    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","1","-1","M","13","-1","02","17")
+//    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","2","-1","M","10","-1","02","17")
+//    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","1","-1","M","10","-1","02","17")
+//    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","0","-1","M","10","-1","02","17")
+//
+//
+//    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","1","2","M","10","-1","02","17")
+//    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","2","1","M","10","-1","02","17")
+//    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","0","2","M","10","-1","02","17")
+    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","0","1","M","10","-1","02","17")
 //    rc.hmset("gradewise:27",Map("suwcount" -> "20","muwcount" -> "20","normalcount" -> "60", "totalcount" -> "100"))
 //    rc.hmset("genderwise:27",Map("malecount" -> "64","femalecount" -> "36"))
 //    rc.hmset("agewise:27",Map("zerotoonecount" -> "12","onetotwocount" -> "14","twotothreecount" -> "08", "threetofourcount" -> "22",

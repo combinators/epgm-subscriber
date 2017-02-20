@@ -24,8 +24,9 @@ class ProcessingEngine {
         new GradeWiseConsolidationUtils().updateGradeWiseConsolidated(GradeWiseConsolidatedEntity("dashboard",
           updateEntity.stateCode, "0", "0", "0", "0"), updateEntity.currentGrade, updateEntity.previousGrade)
       case Some(ge) =>
-        GradeWiseConsolidatedEntity("dashboard", updateEntity.stateCode,
-          ge.get("suwcount").getOrElse("0"),ge.get("muwcount").getOrElse("0"),ge.get("normalcount").getOrElse("0"),ge.get("totalcount").getOrElse("0"))
+        new GradeWiseConsolidationUtils().updateGradeWiseConsolidated(GradeWiseConsolidatedEntity("dashboard", updateEntity.stateCode,
+          ge.get("suwcount").getOrElse("0"),ge.get("muwcount").getOrElse("0"),ge.get("normalcount").getOrElse("0"),ge.get("totalcount").getOrElse("0")),
+          updateEntity.currentGrade, updateEntity.previousGrade)
     }
 
     val genderEntity = record match {
@@ -61,20 +62,6 @@ class ProcessingEngine {
         updateEntity.currentYear, updateEntity.currentGrade, updateEntity.previousGrade)
     }
 
-    /*val gradeEntity = new GradeWiseConsolidationUtils().updateGradeWiseConsolidated(docDbConnector,updateEntity.stateCode,
-      updateEntity.currentGrade,updateEntity.previousGrade)
-
-    val genderEntity = new GenderWiseConsolidationUtils().updateGenderWiseConsolidated(docDbConnector,updateEntity.stateCode,
-      updateEntity.gender,updateEntity.currentGrade,updateEntity.previousGrade)
-
-    val ageEntity = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(docDbConnector,updateEntity.stateCode,
-      updateEntity.currentAge,updateEntity.previousAge,
-      updateEntity.currentGrade,updateEntity.previousGrade)
-
-    val monthEntity = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(docDbConnector,updateEntity.stateCode,
-      updateEntity.currentMonth,updateEntity.currentYear,
-      updateEntity.currentGrade,updateEntity.previousGrade)
-*/
     val tyrionEntity = TyrionEntity("dashboard",updateEntity.stateCode,gradeEntity.suw,gradeEntity.muw,gradeEntity.normal,
       gradeEntity.total,genderEntity.male,genderEntity.female,ageEntity.zeroToOne,ageEntity.oneToTwo,ageEntity.twoToThree,ageEntity.threeToFour,
       ageEntity.fourToFive,ageEntity.fiveToSix,monthEntity.jan,monthEntity.feb,monthEntity.mar,monthEntity.apr,monthEntity.may,monthEntity.jun,
