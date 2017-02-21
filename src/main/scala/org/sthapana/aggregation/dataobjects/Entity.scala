@@ -35,3 +35,18 @@ case class MasterChildDataEntity(doctype:String, dayofbirth:String,monthofbirth:
                                  address:String,sex:String,recordnumber:String,childcode:String,
                                  category:String,fathername:String,name:String,
                                  aanganwadicode:String)
+
+case class MasterAanganwadiDataEntity(doctype:String, aanganwadicode:String,
+                                      aanganwadiname:String)
+
+case class MasterSectorDataEntity(doctype:String, sectorcode:String,
+                                  sectorname:String)
+
+case class MasterProjectDataEntity(doctype:String, projectcode:String,
+                                   projectname:String)
+
+case class MasterDistrictDataEntity(doctype:String, districtcode:String,
+                                    districtname:String)
+
+case class MasterStateDataEntity(doctype:String, statecode:String,
+                                 statename:String)

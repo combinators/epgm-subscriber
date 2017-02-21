@@ -6,8 +6,10 @@ import java.time.temporal.ChronoUnit
 import com.google.gson.Gson
 import com.microsoft.azure.documentdb.{ConnectionPolicy, ConsistencyLevel, Document, DocumentClient}
 import org.junit.{Assert, Test}
-import org.sthapana.aggregation.dataobjects.{MasterChildDataEntity, TyrionEntity, UpdateEntity}
-  import scala.collection.JavaConverters._
+import org.sthapana.aggregation.dataobjects.{AgeWiseConsolidatedEntity, MasterChildDataEntity, TyrionEntity, UpdateEntity}
+import org.sthapana.aggregation.utils.AgeWiseConsolidationUtils
+
+import scala.collection.JavaConverters._
 
 /**
   * Created by chocoklate on 14/2/17.
@@ -107,6 +109,43 @@ class ProcessingEngineTest {
     Assert.assertEquals(expectedAgeCount,results1.get(0).get("onetotwocount"))
     Assert.assertEquals(expectedMonthCount,results1.get(0).get("februarycount"))*/
 
+  }
+
+
+
+
+
+
+
+
+
+
+
+  @Test
+  def itShouldTestUpdateAgeEntityMethod(): Unit = {
+    val awce = AgeWiseConsolidatedEntity("awce","27","0","0","0","0","0","0")
+    println("--------> (1,-1,0,-1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"1","-1","0","-1"))
+    println("--------> (1,-1,1,-1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"1","-1","1","-1"))
+    println("--------> (1,-1,2,-1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"1","-1","2","-1"))
+    println("--------> (2,1,0,0) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","0","0"))
+    println("--------> (2,1,1,0) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","1","0"))
+    println("--------> (2,1,2,0) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","2","0"))
+    println("--------> (2,1,0,1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","0","1"))
+    println("--------> (2,1,1,1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","1","1"))
+    println("--------> (2,1,2,1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","2","1"))
+    println("--------> (2,1,0,2) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","0","2"))
+    println("--------> (2,1,1,2) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","1","2"))
+    println("--------> (2,1,2,2) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","2","2"))
+
+    println("--------> (22,1,0,0) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","0","0"))
+    println("--------> (22,1,1,0) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","1","0"))
+    println("--------> (22,1,2,0) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","2","0"))
+    println("--------> (22,1,0,1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","0","1"))
+    println("--------> (22,1,1,1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","1","1"))
+    println("--------> (22,1,2,1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","2","1"))
+    println("--------> (22,1,0,2) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","0","2"))
+    println("--------> (22,1,1,2) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","1","2"))
+    println("--------> (22,1,2,2) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","2","2"))
   }
 
   @Test

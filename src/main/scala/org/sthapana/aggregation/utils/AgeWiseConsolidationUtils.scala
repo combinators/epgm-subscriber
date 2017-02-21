@@ -20,6 +20,7 @@ class AgeWiseConsolidationUtils() {
   }
 
   private def convertToGroup(age: String):String = age.toInt % 12 match {
+    case -1 => "-1"
     case 0 => (age.toInt/12) + ""
     case _ => (age.toInt/12 + 1) + ""
   }
