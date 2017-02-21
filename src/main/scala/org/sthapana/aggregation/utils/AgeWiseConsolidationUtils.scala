@@ -19,14 +19,9 @@ class AgeWiseConsolidationUtils() {
 
   }
 
-  private def convertToGroup(age: String):String = age match {
-    case x if(x.equals("-1")) => "-1"
-    case x if(x.toInt>=0 && x.toInt<=12) => "1"
-    case x if(x.toInt>=13 && x.toInt<=24) => "2"
-    case x if(x.toInt>=25 && x.toInt<=36) => "3"
-    case x if(x.toInt>=37 && x.toInt<=48) => "4"
-    case x if(x.toInt>=49 && x.toInt<=60) => "5"
-    case x if(x.toInt>=61 && x.toInt<=72) => "6"
+  private def convertToGroup(age: String):String = age.toInt % 12 match {
+    case 0 => (age.toInt/12) + ""
+    case _ => (age.toInt/12 + 1) + ""
   }
 
   private def getUpdatedAgeWiseConsolidatedEntity

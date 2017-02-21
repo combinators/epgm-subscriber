@@ -7,11 +7,22 @@ import com.google.gson.Gson
 import com.microsoft.azure.documentdb.{ConnectionPolicy, ConsistencyLevel, Document, DocumentClient}
 import org.junit.{Assert, Test}
 import org.sthapana.aggregation.dataobjects.{MasterChildDataEntity, TyrionEntity, UpdateEntity}
+  import scala.collection.JavaConverters._
 
 /**
   * Created by chocoklate on 14/2/17.
   */
 class ProcessingEngineTest {
+
+  val HOST = "https://epgm.documents.azure.com:443/"
+  val MASTER_KEY = "SlhyMCNEuU55HklqqibVpNAqi58tN5ZcBjYznR2SLUxNOsjNaEH7JT3kLsaB6K9mRFMtTrl10bx3oJYm9DfsAA=="
+  val DATABASE_ID = "thewall"
+  val COLLECTION_ID = "tyrion"
+
+  val documentClient = new DocumentClient(HOST,
+    MASTER_KEY, ConnectionPolicy.GetDefault(),
+    ConsistencyLevel.Session)
+
   @Test
   def itShouldUpdateValues() = {
     //given
@@ -107,17 +118,7 @@ class ProcessingEngineTest {
     val expectedAgeCount = "15"
     val expectedMonthCount = "21"
 
-    val HOST = "https://epgm.documents.azure.com:443/"
-    val MASTER_KEY = "SlhyMCNEuU55HklqqibVpNAqi58tN5ZcBjYznR2SLUxNOsjNaEH7JT3kLsaB6K9mRFMtTrl10bx3oJYm9DfsAA=="
-    val DATABASE_ID = "thewall"
-    val COLLECTION_ID = "tyrion"
-
-    val documentClient = new DocumentClient(HOST,
-      MASTER_KEY, ConnectionPolicy.GetDefault(),
-      ConsistencyLevel.Session)
 /*
-
-
     val tmp = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
       "SELECT * FROM myCollection where myCollection.doctype=\"child\" and myCollection.aanganwadicode=\"27511010507\" " +
@@ -127,15 +128,15 @@ class ProcessingEngineTest {
     val currentDoc = tmp.get(0)
     def getAgeInMonths(year:Int,month:Int,day:Int) : Long={
       val start = LocalDate.of(year, month, day)
+      println(start)
       val end = LocalDate.now()
-      ChronoUnit.MONTHS.between(end, start)
+      println(end)
+      ChronoUnit.MONTHS.between(start, end)
     }
     val age = getAgeInMonths(Integer.parseInt(currentDoc.get("yearofbirth").toString), Integer.parseInt(currentDoc.get("monthofbirth").toString), Integer.parseInt(currentDoc.get("dayofbirth").toString))
     //List(("doctype","log"),("age", age.toString), ("dayofbirth", currentDoc.get("dayofbirth").toString), ("monthofbirth", currentDoc.get("monthofbirth").toString), ("yearofbirth", currentDoc.get("yearofbirth").toString), ("recordnumber", "1"), ("address", currentDoc.get("address").toString), ("category", currentDoc.get("category").toString), ("sex", currentDoc.get("sex").toString), ("name", currentDoc.get("name").toString), ("fathername", currentDoc.get("fathername").toString))
-    val age1: Long = -9
-    println(getAgeInMonths(2017,11,27))
-    println(age1.toString)
-*/
+
+    println(age)*/
 
 
     val results1 = documentClient.queryDocuments(
@@ -153,6 +154,14 @@ class ProcessingEngineTest {
       null).getQueryIterable().toList()
 
     println("log ===>"+results2)
+
+    val results3 = documentClient.queryDocuments(
+      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+      "SELECT * FROM tyrion where tyrion.doctype=\"child\" ",
+      //      "SELECT * FROM tyrion ",
+      null).getQueryIterable().toList()
+
+    println("child ===>"+results3)
   }
 
   @Test
@@ -164,14 +173,6 @@ class ProcessingEngineTest {
       val expectedAgeCount = "15"
       val expectedMonthCount = "21"
 
-      val HOST = "https://epgm.documents.azure.com:443/"
-      val MASTER_KEY = "SlhyMCNEuU55HklqqibVpNAqi58tN5ZcBjYznR2SLUxNOsjNaEH7JT3kLsaB6K9mRFMtTrl10bx3oJYm9DfsAA=="
-      val DATABASE_ID = "thewall"
-      val COLLECTION_ID = "tyrion"
-
-      val documentClient = new DocumentClient(HOST,
-        MASTER_KEY, ConnectionPolicy.GetDefault(),
-        ConsistencyLevel.Session)
 
     //when
     val masterChildEntity = MasterChildDataEntity("child", "27","11","2017","","M","2","041","","N PANT",
@@ -183,10 +184,51 @@ class ProcessingEngineTest {
       entityDocument, null,false).getResource()
     }
 
-/*  @Test
-  def itShouldUpdateDB(): Unit ={
-    new ProcessingEngine(UpdateEntity("27","511", "01", "05"))
-  }*/
+  @Test
+  def itShouldRemoveAllMasterData(): Unit ={
+
+    val documents = documentClient.queryDocuments(
+      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+      "SELECT * FROM tyrion where tyrion.doctype=\"child\" ",
+      //      "SELECT * FROM tyrion ",
+      null).getQueryIterable().asScala.toList
+
+    documents.foreach(d => {
+      documentClient.deleteDocument(d.getSelfLink(), null)
+    })
+
+  }
+
+  @Test
+  def itShouldRemoveAllLogData(): Unit ={
+
+    val documents = documentClient.queryDocuments(
+      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+      "SELECT * FROM tyrion where tyrion.doctype=\"log\" ",
+      //      "SELECT * FROM tyrion ",
+      null).getQueryIterable().asScala.toList
+
+    documents.foreach(d => {
+      documentClient.deleteDocument(d.getSelfLink(), null)
+    })
+
+
+
+  }
+
+  @Test
+  def itShouldRemoveAllDashboardData(): Unit ={
+
+    val documents = documentClient.queryDocuments(
+      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+      "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" ",
+      //      "SELECT * FROM tyrion ",
+      null).getQueryIterable().asScala.toList
+
+    documents.foreach(d => {
+      documentClient.deleteDocument(d.getSelfLink(), null)
+    })
+  }
 
 }
 

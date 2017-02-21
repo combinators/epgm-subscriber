@@ -100,7 +100,7 @@ class AzureDocumentDB(host: String, password: String,db:String,collection:String
   private def getAgeInMonths(year:Int,month:Int,day:Int) : Long={
     val start = LocalDate.of(year, month, day)
     val end = LocalDate.now()
-    ChronoUnit.MONTHS.between(end, start)
+    Math.abs(ChronoUnit.MONTHS.between(start, end))
   }
 
 

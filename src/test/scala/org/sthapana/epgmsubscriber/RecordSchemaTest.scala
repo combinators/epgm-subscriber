@@ -9,7 +9,7 @@ class RecordSchemaTest {
   @Test
   def shouldValidateRecordStringWithGivenSchema(): Unit = {
     //given
-    val sampleRecord = "123456789110210656500169002300151216704614"
+    val sampleRecord = "275110105070410147050107001310200317702612"
 
     val schema = SchemaFactory.type1
 
@@ -22,7 +22,7 @@ class RecordSchemaTest {
   @Test
   def shouldExtractRecordApplyingTheGivenSchema(): Unit = {
     //given
-    val sampleRecord = "123456789110210656500169002300151216704614"
+    val sampleRecord = "275110105070410147050107001310200317702612"
     val schema = SchemaFactory.type1
 
     //when
@@ -58,7 +58,6 @@ class RecordSchemaTest {
 
     val map=record.toMap
 
-    map
     //then
     List(
       "statecode"->"12",
