@@ -18,7 +18,7 @@ class ProcessingEngine {
       "thewall","tyrion")
 
     val (record, document) = docDbConnector.getConsolidatedRecord(updateEntity.stateCode)
-    println("record =======>"+ record)
+//    println("record =======>"+ record)
     val gradeEntity = record match {
       case None =>
         new GradeWiseConsolidationUtils().updateGradeWiseConsolidated(GradeWiseConsolidatedEntity("dashboard",
@@ -28,14 +28,14 @@ class ProcessingEngine {
           ge.get("suwcount").getOrElse("0"),ge.get("muwcount").getOrElse("0"),ge.get("normalcount").getOrElse("0"),ge.get("totalcount").getOrElse("0")),
           updateEntity.currentGrade, updateEntity.previousGrade)
     }
-    println("gradeEntity=====>"+ gradeEntity)
+//    println("gradeEntity=====>"+ gradeEntity)
     val genderEntity = record match {
       case None => new GenderWiseConsolidationUtils().updateGenderWiseConsolidated(GenderWiseConsolidatedEntity("dashboard", updateEntity.stateCode,
         "0", "0"),updateEntity.gender, updateEntity.currentGrade, updateEntity.previousGrade)
       case Some(ge) => new GenderWiseConsolidationUtils().updateGenderWiseConsolidated(GenderWiseConsolidatedEntity("dashboard", updateEntity.stateCode,
         ge.get("malecount").getOrElse("0"),ge.get("femalecount").getOrElse("0")),updateEntity.gender, updateEntity.currentGrade, updateEntity.previousGrade)
     }
-    println("genderEntity=====>"+ genderEntity)
+//    println("genderEntity=====>"+ genderEntity)
     val ageEntity = record match {
       case None =>
         new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(AgeWiseConsolidatedEntity("dashboard", updateEntity.stateCode,
@@ -45,7 +45,7 @@ class ProcessingEngine {
         ae.get("threetofourcount").getOrElse("0"), ae.get("fourtofivecount").getOrElse("0"), ae.get("fivetosixcount").getOrElse("0")),
         updateEntity.currentAge,updateEntity.previousAge, updateEntity.currentGrade, updateEntity.previousGrade)
     }
-    println("ageEntity=====>"+ ageEntity)
+//    println("ageEntity=====>"+ ageEntity)
     val currMon  = Calendar.getInstance().get(Calendar.MONTH)
     val currYear = Calendar.getInstance().get(Calendar.YEAR)
 
@@ -61,12 +61,11 @@ class ProcessingEngine {
         me.get("decembercount").getOrElse("0"), me.get("currentmonth").getOrElse("0"), me.get("currentyear").getOrElse("0")), updateEntity.currentMonth,
         updateEntity.currentYear, updateEntity.currentGrade, updateEntity.previousGrade)
     }
-    println("monthEntity=====>"+ monthEntity)
+//    println("monthEntity=====>"+ monthEntity)
     val tyrionEntity = TyrionEntity("dashboard",updateEntity.stateCode,gradeEntity.suw,gradeEntity.muw,gradeEntity.normal,
       gradeEntity.total,genderEntity.male,genderEntity.female,ageEntity.zeroToOne,ageEntity.oneToTwo,ageEntity.twoToThree,ageEntity.threeToFour,
       ageEntity.fourToFive,ageEntity.fiveToSix,monthEntity.jan,monthEntity.feb,monthEntity.mar,monthEntity.apr,monthEntity.may,monthEntity.jun,
       monthEntity.jul,monthEntity.aug,monthEntity.sep,monthEntity.oct,monthEntity.nov,monthEntity.dec,monthEntity.currmonth,monthEntity.curryear)
-
     record match {
       case None =>
         //docDbConnector.deleteConsolidatedRecord(updateEntity.stateCode, document.get)
@@ -78,8 +77,8 @@ class ProcessingEngine {
     }
 
 
-    println(record)
-    println(tyrionEntity)
+    println("-------> record : "+record)
+    println("-------> tyrionEntity : "+tyrionEntity)
   }
 
 }

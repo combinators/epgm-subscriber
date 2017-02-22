@@ -33,7 +33,7 @@ case class TyrionEntity(doctype:String, code:String, suwcount:String,
 
 case class MasterChildDataEntity(doctype:String, dayofbirth:String,monthofbirth:String,yearofbirth:String,
                                  address:String,sex:String,recordnumber:String,childcode:String,
-                                 category:String,fathername:String,name:String,
+                                 category:String,name:String,fathername:String,
                                  aanganwadicode:String)
 
 case class MasterAanganwadiDataEntity(doctype:String, aanganwadicode:String,
