@@ -42,7 +42,7 @@ class RecordSchemaTest {
       "wasting" -> "7",
       "stunting" -> "0",
       "minutes" -> "46",
-      "hours" -> "14") should contain theSameElementsAs(record)
+      "hours" -> "14").toMap should contain theSameElementsAs(record)
 
   }
 
@@ -55,8 +55,6 @@ class RecordSchemaTest {
     //when
     val record:Record = schema.apply(sampleRecord).get
 
-
-    val map=record.toMap
 
     //then
     List(
@@ -77,7 +75,7 @@ class RecordSchemaTest {
       "wasting" -> "7",
       "stunting" -> "0",
       "minutes" -> "46",
-      "hours" -> "14") should contain theSameElementsAs(record)
+      "hours" -> "14").toMap should contain theSameElementsAs(record)
   }
 
 }
