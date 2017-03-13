@@ -16,10 +16,6 @@ class AzureDocumentDB(host: String, password: String, db: String, collection: St
   val LOG_DOC_TYPE = "log"
   val documentClient = new DocumentClient(host, password, ConnectionPolicy.GetDefault(), ConsistencyLevel.Session)
 
-  def insert(record: Record): Document = documentClient.createDocument(
-    "dbs/" + db + "/colls/" + collection, new Document(new Gson().toJson(Marshaller(record))), null, false)
-    .getResource
-
   def insertRecordInDatabase(record: Record) = {
     val results = documentClient.queryDocuments("dbs/" + db + "/colls/" + collection,
       "SELECT * FROM myCollection where myCollection.doctype=\"log\"  and myCollection.aanganwadicode=\"" + record("aanganwadicode") + "\" and myCollection.childcode=\"" + record("childcode") + "\" order by myCollection.recordnumber DESC",

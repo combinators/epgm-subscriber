@@ -14,10 +14,6 @@ object SubscriberApp {
     val channel = ChannelFactory("localhost", QUEUE_NAME)
     val az = AzureDocumentDB("https://epgm.documents.azure.com:443/", "SlhyMCNEuU55HklqqibVpNAqi58tN5ZcBjYznR2SLUxNOsjNaEH7JT3kLsaB6K9mRFMtTrl10bx3oJYm9DfsAA==", "thewall", "tyrion")
 
-    val QUEUE_NAME = "epgm_logdata"
-    val channel = ChannelFactory(args(0), QUEUE_NAME)
-    val az = AzureDocumentDB("https://epgm.documents.azure.com:443/", "0r8CYYVlo87KvsDjCipWlZtEBXWa2u2qEQWjTtd1ab0B2psDKHO6sceXsFgxKWiTZ1nUObIBknN3u2WnrWE4ig==", "thewall", "tyrion")
-
     val consumer = new DefaultConsumer(channel) {
       override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
         val rawData = new String(body, "UTF-8")
@@ -39,9 +35,8 @@ object SubscriberApp {
           case e: Exception => println("Error occured while inserting into database" + e.getMessage)
         }
       }
-      channel.basicConsume(QUEUE_NAME, true, consumer)
     }
-
+    channel.basicConsume(QUEUE_NAME, true, consumer)
   }
 
 }
