@@ -35,7 +35,6 @@ class ProcessingEngineTest {
     val results2 = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
       "SELECT * FROM tyrion where tyrion.doctype=\"log\" ",
-      //      "SELECT * FROM tyrion ",
       null).getQueryIterable().toList()
     println("log ===>" + results2)
 
@@ -47,6 +46,68 @@ class ProcessingEngineTest {
       null).getQueryIterable().toList()
 
     println("child ===>" + results3)
+  }
+
+  @Test
+  def itShouldGetLogRecordsByAAnganwadicode(): Unit ={
+    //given
+
+    //when
+    val logRecords = documentClient.queryDocuments(
+      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+      "SELECT * FROM tyrion where tyrion.sex='F' and tyrion.aanganwadicode=\"27511010507\" and " +
+        "tyrion.doctype=\"log\" ",
+      null).getQueryIterable().toList()
+
+    //then
+    println(logRecords)
+  }
+
+  @Test
+  def itShouldGetDashboardDocument(): Unit ={
+    //given
+
+    //when
+    val logRecords = documentClient.queryDocuments(
+      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+      "SELECT * FROM tyrion where tyrion.code=\"27\" and tyrion.doctype=\"dashboard\" ",
+      null).getQueryIterable().toList()
+
+    //then
+    println(logRecords)
+  }
+
+  @Test
+  def itShouldRemoveSpecificDashboardDocument(): Unit ={
+
+    val documents = documentClient.queryDocuments(
+      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+      "SELECT * FROM tyrion where tyrion.code=\"27\" and tyrion.doctype=\"dashboard\" ",
+      null).getQueryIterable().asScala.toList
+
+    println(documents)
+
+    documents.foreach(d => {
+      documentClient.deleteDocument(d.getSelfLink(), null)
+    })
+
+  }
+
+  @Test
+  def itShouldInsertDashboardDocument(): Unit ={
+    //given
+
+    //when
+    val tyrionEntity = TyrionEntity("dashboard","27","24","90","175",
+      "289","61","53","0","6","41","63",
+      "0","0","0","114","0","0","0","0",
+      "0","0","0","0","0","0","02","17")
+
+    val entityJson = new Gson().toJson(tyrionEntity)
+    val entityDocument = new Document(entityJson)
+
+    documentClient.createDocument(s"dbs/$DATABASE_ID/colls/$COLLECTION_ID",
+      entityDocument, null,false).getResource()
   }
 
   @Test
@@ -69,7 +130,25 @@ class ProcessingEngineTest {
   }
 
   @Test
-  def itShouldRemoveAllMasterData(): Unit = {
+  def itShouldRemoveSpecificLogData(): Unit ={
+
+    val documents = documentClient.queryDocuments(
+      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+      "SELECT * FROM tyrion where tyrion.sex='F' and tyrion.aanganwadicode=\"27511010507\" and " +
+        "tyrion.doctype=\"log\" and tyrion.childcode=\"044\"",
+      //      "SELECT * FROM tyrion ",
+      null).getQueryIterable().asScala.toList
+
+    println(documents)
+
+    documents.foreach(d => {
+      documentClient.deleteDocument(d.getSelfLink(), null)
+    })
+
+  }
+
+  @Test
+  def itShouldRemoveAllMasterData(): Unit ={
 
     val documents = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
