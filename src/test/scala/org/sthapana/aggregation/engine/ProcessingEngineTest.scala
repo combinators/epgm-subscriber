@@ -1,19 +1,13 @@
 package org.sthapana.aggregation.engine
 
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
-
 import com.google.gson.Gson
 import com.microsoft.azure.documentdb.{ConnectionPolicy, ConsistencyLevel, Document, DocumentClient}
 import org.junit.{Assert, Test}
-import org.sthapana.aggregation.dataobjects.{AgeWiseConsolidatedEntity, MasterChildDataEntity, TyrionEntity, UpdateEntity}
-import org.sthapana.aggregation.utils.AgeWiseConsolidationUtils
+import org.sthapana.aggregation.dataobjects._
+import org.sthapana.aggregation.utils.{AgeWiseConsolidationUtils, GenderWiseConsolidationUtils, GradeWiseConsolidationUtils, MonthWiseConsolidationUtils}
 
 import scala.collection.JavaConverters._
 
-/**
-  * Created by chocoklate on 14/2/17.
-  */
 class ProcessingEngineTest {
 
   val HOST = "https://epgm.documents.azure.com:443/"
@@ -26,165 +20,14 @@ class ProcessingEngineTest {
     ConsistencyLevel.Session)
 
   @Test
-  def itShouldUpdateValues() = {
-    //given
-//    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","2","-1","M","10","-1","02","17")
-//    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","1","-1","M","10","-1","02","17")
-//    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","0","-1","M","10","-1","02","17")
-//
-//
-//    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","1","2","M","10","-1","02","17")
-//    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","2","1","M","10","-1","02","17")
-//    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","0","2","M","10","-1","02","17")
-    val updateEntity = UpdateEntity("27","27001","2700102","270010203","27001020304","2","-1","M","10","-1","02","17")
-//    rc.hmset("gradewise:27",Map("suwcount" -> "20","muwcount" -> "20","normalcount" -> "60", "totalcount" -> "100"))
-//    rc.hmset("genderwise:27",Map("malecount" -> "64","femalecount" -> "36"))
-//    rc.hmset("agewise:27",Map("zerotoonecount" -> "12","onetotwocount" -> "14","twotothreecount" -> "08", "threetofourcount" -> "22",
-//      "fourtofivecount" -> "27", "fivetosixcount" -> "5"))
-//    rc.hmset("monthwise:27",Map("januarycount" -> "20","februarycount" -> "20","marchcount" -> "60", "aprilcount" -> "100",
-//      "maycount" -> "20","junecount" -> "20","julycount" -> "60", "augustcount" -> "100",
-//      "septembercount" -> "20","octobercount" -> "20","novembercount" -> "60", "decembercount" -> "100",
-//      "currentmonth" -> "02", "currentyear" -> "17"))
-//
-//    //when
-    new ProcessingEngine().updateDB(updateEntity)
-//    val graderecord = rc.hmget[String,String]("gradewise:27", "suwcount","muwcount", "normalcount","totalcount").get
-//    val agerecord = rc.hmget[String,String]("agewise:27", "zerotoonecount" ,"onetotwocount" ,"twotothreecount" , "threetofourcount" ,
-//      "fourtofivecount", "fivetosixcount").get
-//    val genderrecord = rc.hmget[String,String]("genderwise:27", "malecount","femalecount").get
-//    val monthrecord = rc.hmget[String,String]("monthwise:27", "januarycount","februarycount","marchcount", "aprilcount",
-//      "maycount","junecount","julycount", "augustcount",
-//      "septembercount","octobercount","novembercount", "decembercount",
-//      "currentmonth", "currentyear").get
-
-    //then
-    val expectedMUWCount = "21"
-    val expectedTotalCount = "101"
-    val expectedMaleCount = "65"
-    val expectedAgeCount = "15"
-    val expectedMonthCount = "21"
-
-    val HOST = "https://epgm.documents.azure.com:443/"
-    val MASTER_KEY = "Bhn3zf9QiYGzgJoiJByEHeByBBHkzTsRHnqH0HcNO0shAIyC7yUGEokAsB507XmBJruTBSxMTpHONjG6xlb4Tg=="
-    val DATABASE_ID = "thewall"
-    val COLLECTION_ID = "tyrion"
-
-    val documentClient = new DocumentClient(HOST,
-      MASTER_KEY, ConnectionPolicy.GetDefault(),
-      ConsistencyLevel.Session)
-
-    val tyrionEntity = TyrionEntity("dashboard","27","20","20","60",
-      "100","64","36","5","4","9","6","2","7","1","2","3","4","5","6",
-      "7","8","9","10","11","12","02","17")
-//
-//    val results2 = documentClient.queryDocuments(
-//      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
-//      "SELECT * FROM logdata  ",
-//      null).getQueryIterable().toList()
-//    println("--------->results:"+results2.size())
-//
-//    for(i <- 0 to results2.size()-1)
-//        documentClient.deleteDocument(results2.get(i).getSelfLink(), null);
-//
-//    val results = documentClient.queryDocuments(
-//      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
-//      "SELECT * FROM logdata  ",
-//      null).getQueryIterable().toList()
-//    println("--------->results:"+results.size())
-//
-    var someJson = new Gson().toJson(tyrionEntity);
-    var someDocument = new Document(someJson)
-    //documentClient.createDocument("dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID, someDocument, null,false).getResource();
-
-    /*val results1 = documentClient.queryDocuments(
-      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
-      "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" and tyrion.code=\"27\" ",
-//      "SELECT * FROM tyrion ",
-      null).getQueryIterable().toList()
-    println("--------->results:"+results1)
-
-    Assert.assertEquals(expectedMUWCount,results1.get(0).get("muwcount"))
-    Assert.assertEquals(expectedTotalCount,results1.get(0).get("totalcount"))
-    Assert.assertEquals(expectedMaleCount,results1.get(0).get("malecount"))
-    Assert.assertEquals(expectedAgeCount,results1.get(0).get("onetotwocount"))
-    Assert.assertEquals(expectedMonthCount,results1.get(0).get("februarycount"))*/
-
-  }
-
-
-
-
-
-
-
-
-
-
-
-  @Test
-  def itShouldTestUpdateAgeEntityMethod(): Unit = {
-    val awce = AgeWiseConsolidatedEntity("awce","27","0","0","0","0","0","0")
-    println("--------> (1,-1,0,-1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"1","-1","0","-1"))
-    println("--------> (1,-1,1,-1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"1","-1","1","-1"))
-    println("--------> (1,-1,2,-1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"1","-1","2","-1"))
-    println("--------> (2,1,0,0) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","0","0"))
-    println("--------> (2,1,1,0) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","1","0"))
-    println("--------> (2,1,2,0) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","2","0"))
-    println("--------> (2,1,0,1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","0","1"))
-    println("--------> (2,1,1,1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","1","1"))
-    println("--------> (2,1,2,1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","2","1"))
-    println("--------> (2,1,0,2) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","0","2"))
-    println("--------> (2,1,1,2) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","1","2"))
-    println("--------> (2,1,2,2) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"2","1","2","2"))
-
-    println("--------> (22,1,0,0) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","0","0"))
-    println("--------> (22,1,1,0) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","1","0"))
-    println("--------> (22,1,2,0) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","2","0"))
-    println("--------> (22,1,0,1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","0","1"))
-    println("--------> (22,1,1,1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","1","1"))
-    println("--------> (22,1,2,1) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","2","1"))
-    println("--------> (22,1,0,2) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","0","2"))
-    println("--------> (22,1,1,2) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","1","2"))
-    println("--------> (22,1,2,2) upd_awce : " + new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce,"22","1","2","2"))
-  }
-
-  @Test
-  def itShouldGetMasterChildData(): Unit ={
-
-    val expectedMUWCount = "21"
-    val expectedTotalCount = "101"
-    val expectedMaleCount = "65"
-    val expectedAgeCount = "15"
-    val expectedMonthCount = "21"
-
-/*
-    val tmp = documentClient.queryDocuments(
-      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
-      "SELECT * FROM myCollection where myCollection.doctype=\"child\" and myCollection.aanganwadicode=\"27511010507\" " +
-        "and myCollection.childcode=\"041\"",
-      null).getQueryIterable().toList()
-
-    val currentDoc = tmp.get(0)
-    def getAgeInMonths(year:Int,month:Int,day:Int) : Long={
-      val start = LocalDate.of(year, month, day)
-      println(start)
-      val end = LocalDate.now()
-      println(end)
-      ChronoUnit.MONTHS.between(start, end)
-    }
-    val age = getAgeInMonths(Integer.parseInt(currentDoc.get("yearofbirth").toString), Integer.parseInt(currentDoc.get("monthofbirth").toString), Integer.parseInt(currentDoc.get("dayofbirth").toString))
-    //List(("doctype","log"),("age", age.toString), ("dayofbirth", currentDoc.get("dayofbirth").toString), ("monthofbirth", currentDoc.get("monthofbirth").toString), ("yearofbirth", currentDoc.get("yearofbirth").toString), ("recordnumber", "1"), ("address", currentDoc.get("address").toString), ("category", currentDoc.get("category").toString), ("sex", currentDoc.get("sex").toString), ("name", currentDoc.get("name").toString), ("fathername", currentDoc.get("fathername").toString))
-
-    println(age)*/
-
-
+  def itShouldGetMasterChildData(): Unit = {
     val results1 = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
       "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" ",
       //      "SELECT * FROM tyrion ",
       null).getQueryIterable().toList()
 
-    println("dashboard ===>"+results1)
+    println("dashboard ===>" + results1)
 
     val results2 = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
@@ -192,7 +35,7 @@ class ProcessingEngineTest {
       //      "SELECT * FROM tyrion ",
       null).getQueryIterable().toList()
 
-    println("log ===>"+results2)
+    println("log ===>" + results2)
 
     val results3 = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
@@ -200,31 +43,30 @@ class ProcessingEngineTest {
       //      "SELECT * FROM tyrion ",
       null).getQueryIterable().toList()
 
-    println("child ===>"+results3)
+    println("child ===>" + results3)
   }
 
   @Test
-  def itShouldInserMasterChildRecord(): Unit ={
-      //given
-      val expectedMUWCount = "21"
-      val expectedTotalCount = "101"
-      val expectedMaleCount = "65"
-      val expectedAgeCount = "15"
-      val expectedMonthCount = "21"
-
+  def itShouldInserMasterChildRecord(): Unit = {
+    //given
+    val expectedMUWCount = "21"
+    val expectedTotalCount = "101"
+    val expectedMaleCount = "65"
+    val expectedAgeCount = "15"
+    val expectedMonthCount = "21"
 
     //when
-    val masterChildEntity = MasterChildDataEntity("child", "27","11","2017","","M","2","041","","N PANT",
-                            "SHRIKANT","27511010507")
+    val masterChildEntity = MasterChildDataEntity("child", "27", "11", "2017", "", "M", "2", "041", "", "N PANT",
+      "SHRIKANT", "27511010507")
     val entityJson = new Gson().toJson(masterChildEntity)
     val entityDocument = new Document(entityJson)
 
     documentClient.createDocument(s"dbs/$DATABASE_ID/colls/$COLLECTION_ID",
-      entityDocument, null,false).getResource()
-    }
+      entityDocument, null, false).getResource()
+  }
 
   @Test
-  def itShouldRemoveAllMasterData(): Unit ={
+  def itShouldRemoveAllMasterData(): Unit = {
 
     val documents = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
@@ -239,7 +81,7 @@ class ProcessingEngineTest {
   }
 
   @Test
-  def itShouldRemoveAllLogData(): Unit ={
+  def itShouldRemoveAllLogData(): Unit = {
 
     val documents = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
@@ -252,11 +94,10 @@ class ProcessingEngineTest {
     })
 
 
-
   }
 
   @Test
-  def itShouldRemoveAllDashboardData(): Unit ={
+  def itShouldRemoveAllDashboardData(): Unit = {
 
     val documents = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
@@ -268,6 +109,231 @@ class ProcessingEngineTest {
       documentClient.deleteDocument(d.getSelfLink(), null)
     })
   }
+
+//  doctype
+//  code
+//  currentmonth
+//  currentyear
+//  suwcount
+//  muwcount
+//  normalcount
+//  totalcount
+//  malecount
+//  femalecount
+//  zerotoonecount
+//  onetotwocount
+//  twotothreecount
+//  threetofourcount
+//  fourtofivecount
+//  fivetosixcount
+//  januarycount
+//  februarycount
+//  marchcount
+//  aprilcount
+//  maycount
+//  junecount
+//  julycount
+//  augustcount
+//  septembercount
+//  octobercount
+//  novembercount
+//  decembercount
+
+  @Test
+  def itShouldTestMethod_UpdateIfMonthIsNotSame_(): Unit = {
+    val tyrionMap: Map[String, String] = Map(
+      "twotothreecount" -> "8", "doctype" -> "tyrion",
+      "threetofourcount" -> "8", "code" -> "27",
+      "fourtofivecount" -> "0", "currentmonth" -> "03",
+      "fivetosixcount" -> "0", "currentyear" -> "17",
+      "januarycount" -> "30", "suwcount" -> "10",
+      "februarycount" -> "30", "muwcount" -> "10",
+      "marchcount" -> "30", "normalcount" -> "10",
+      "aprilcount" -> "30", "totalcount" -> "30",
+      "maycount" -> "30", "malecount" -> "15",
+      "junecount" -> "30", "femalecount" -> "15",
+      "julycount" -> "30", "zerotoonecount" -> "7",
+      "augustcount" -> "30", "onetotwocount" -> "7",
+      "septembercount" -> "30", "novembercount" -> "30",
+      "octobercount" -> "30", "decembercount" -> "30"
+    )
+
+    val updateEntityWithOutMonthChange: UpdateEntity = UpdateEntity("27", "", "", "", "", "2", "0", "M", "5", "4", "03", "17")
+    val updateEntityWithMonthChange: UpdateEntity = UpdateEntity("27", "", "", "", "", "2", "0", "M", "5", "4", "04", "17")
+    val updateEntityWithYearChange: UpdateEntity = UpdateEntity("27", "", "", "", "", "2", "0", "M", "5", "4", "01", "18")
+    val updateEntityWithMonthAndYearChange: UpdateEntity = UpdateEntity("27", "", "", "", "", "2", "0", "M", "5", "04", "4", "18")
+
+    val mapWithOutMonthChange = new ProcessingEngine().updateIfMonthIsNotSame((Option(tyrionMap),Option(new Document())),
+      updateEntityWithOutMonthChange.currentMonth, updateEntityWithOutMonthChange.currentYear)
+    val mapWithMonthChange = new ProcessingEngine().updateIfMonthIsNotSame((Option(tyrionMap),Option(new Document())),
+      updateEntityWithMonthChange.currentMonth, updateEntityWithMonthChange.currentYear)
+    val mapWithYearChange = new ProcessingEngine().updateIfMonthIsNotSame((Option(tyrionMap),Option(new Document())),
+      updateEntityWithYearChange.currentMonth, updateEntityWithYearChange.currentYear)
+    val mapWithMonthAndYearChange = new ProcessingEngine().updateIfMonthIsNotSame((Option(tyrionMap),Option(new Document())),
+      updateEntityWithMonthAndYearChange.currentMonth, updateEntityWithMonthAndYearChange.currentYear)
+
+    Assert.assertEquals("10", mapWithOutMonthChange._1.get("suwcount"))
+    Assert.assertEquals("0", mapWithMonthChange._1.get("suwcount"))
+    Assert.assertEquals("0", mapWithYearChange._1.get("suwcount"))
+    Assert.assertEquals("0", mapWithMonthAndYearChange._1.get("suwcount"))
+
+  }
+
+  @Test
+  def itShouldTestUpdateGradeEntityMethod(): Unit = {
+    val ONE: String = "1"
+    val gwce = GradeWiseConsolidatedEntity("awce", "27", "0", "0", "0", "0")
+    var upd_gwce = new GradeWiseConsolidationUtils().updateGradeWiseConsolidated(gwce, "0")
+    Assert.assertEquals(ONE, upd_gwce.normal)
+    Assert.assertEquals(ONE, upd_gwce.total)
+    upd_gwce = new GradeWiseConsolidationUtils().updateGradeWiseConsolidated(gwce, "1")
+    Assert.assertEquals(ONE, upd_gwce.muw)
+    Assert.assertEquals(ONE, upd_gwce.total)
+    upd_gwce = new GradeWiseConsolidationUtils().updateGradeWiseConsolidated(gwce, "2")
+    Assert.assertEquals(ONE, upd_gwce.suw)
+    Assert.assertEquals(ONE, upd_gwce.total)
+  }
+
+  @Test
+  def itShouldTestUpdateMonthEntityMethod(): Unit = {
+    val ZERO: String = "0"
+    val ONE: String = "1"
+    val mwce = MonthWiseConsolidatedEntity("awce", "27", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "03", "17")
+    var upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "01", "17", "0")
+    Assert.assertEquals(ZERO, upd_mwce.jan)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "01", "17", "1")
+    Assert.assertEquals(ONE, upd_mwce.jan)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "01", "17", "2")
+    Assert.assertEquals(ONE, upd_mwce.jan)
+
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "02", "17", "0")
+    Assert.assertEquals(ZERO, upd_mwce.feb)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "02", "17", "1")
+    Assert.assertEquals(ONE, upd_mwce.feb)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "02", "17", "2")
+    Assert.assertEquals(ONE, upd_mwce.feb)
+
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "03", "17", "0")
+    Assert.assertEquals(ZERO, upd_mwce.mar)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "03", "17", "1")
+    Assert.assertEquals(ONE, upd_mwce.mar)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "03", "17", "2")
+    Assert.assertEquals(ONE, upd_mwce.mar)
+
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "04", "17", "0")
+    Assert.assertEquals(ZERO, upd_mwce.apr)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "04", "17", "1")
+    Assert.assertEquals(ONE, upd_mwce.apr)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "04", "17", "2")
+    Assert.assertEquals(ONE, upd_mwce.apr)
+
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "05", "17", "0")
+    Assert.assertEquals(ZERO, upd_mwce.may)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "05", "17", "1")
+    Assert.assertEquals(ONE, upd_mwce.may)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "05", "17", "2")
+    Assert.assertEquals(ONE, upd_mwce.may)
+
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "06", "17", "0")
+    Assert.assertEquals(ZERO, upd_mwce.jun)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "06", "17", "1")
+    Assert.assertEquals(ONE, upd_mwce.jun)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "06", "17", "2")
+    Assert.assertEquals(ONE, upd_mwce.jun)
+
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "07", "17", "0")
+    Assert.assertEquals(ZERO, upd_mwce.jul)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "07", "17", "1")
+    Assert.assertEquals(ONE, upd_mwce.jul)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "07", "17", "2")
+    Assert.assertEquals(ONE, upd_mwce.jul)
+
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "08", "17", "0")
+    Assert.assertEquals(ZERO, upd_mwce.aug)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "08", "17", "1")
+    Assert.assertEquals(ONE, upd_mwce.aug)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "08", "17", "2")
+    Assert.assertEquals(ONE, upd_mwce.aug)
+
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "09", "17", "0")
+    Assert.assertEquals(ZERO, upd_mwce.sep)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "09", "17", "1")
+    Assert.assertEquals(ONE, upd_mwce.sep)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "09", "17", "2")
+    Assert.assertEquals(ONE, upd_mwce.sep)
+
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "10", "17", "0")
+    Assert.assertEquals(ZERO, upd_mwce.oct)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "10", "17", "1")
+    Assert.assertEquals(ONE, upd_mwce.oct)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "10", "17", "2")
+    Assert.assertEquals(ONE, upd_mwce.oct)
+
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "11", "17", "0")
+    Assert.assertEquals(ZERO, upd_mwce.nov)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "11", "17", "1")
+    Assert.assertEquals(ONE, upd_mwce.nov)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "11", "17", "2")
+    Assert.assertEquals(ONE, upd_mwce.nov)
+
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "12", "17", "0")
+    Assert.assertEquals(ZERO, upd_mwce.dec)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "12", "17", "1")
+    Assert.assertEquals(ONE, upd_mwce.dec)
+    upd_mwce = new MonthWiseConsolidationUtils().updateMonthWiseConsolidated(mwce, "12", "17", "2")
+    Assert.assertEquals(ONE, upd_mwce.dec)
+  }
+
+  @Test
+  def itShouldTestUpdateGenderEntityMethod(): Unit = {
+    val ZERO: String = "0"
+    val ONE: String = "1"
+    val gwce = GenderWiseConsolidatedEntity("awce", "27", "0", "0")
+    var upd_gwce = new GenderWiseConsolidationUtils().updateGenderWiseConsolidated(gwce, "M", "0")
+    Assert.assertEquals(ZERO, upd_gwce.male)
+    upd_gwce = new GenderWiseConsolidationUtils().updateGenderWiseConsolidated(gwce, "M", "1")
+    Assert.assertEquals(ONE, upd_gwce.male)
+    upd_gwce = new GenderWiseConsolidationUtils().updateGenderWiseConsolidated(gwce, "M", "2")
+    Assert.assertEquals(ONE, upd_gwce.male)
+    upd_gwce = new GenderWiseConsolidationUtils().updateGenderWiseConsolidated(gwce, "F", "0")
+    Assert.assertEquals(ZERO, upd_gwce.female)
+    upd_gwce = new GenderWiseConsolidationUtils().updateGenderWiseConsolidated(gwce, "F", "1")
+    Assert.assertEquals(ONE, upd_gwce.female)
+    upd_gwce = new GenderWiseConsolidationUtils().updateGenderWiseConsolidated(gwce, "F", "2")
+    Assert.assertEquals(ONE, upd_gwce.female)
+  }
+
+  @Test
+  def itShouldTestUpdateAgeEntityMethod(): Unit = {
+    val ZERO: String = "0"
+    val ONE: String = "1"
+    val awce = AgeWiseConsolidatedEntity("awce", "27", "0", "0", "0", "0", "0", "0")
+    var upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "1", "0")
+    Assert.assertEquals(ZERO, upd_awce.zeroToOne)
+    upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "1", "1")
+    Assert.assertEquals(ONE, upd_awce.zeroToOne)
+    upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "1", "2")
+    Assert.assertEquals(ONE, upd_awce.zeroToOne)
+    upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "22", "0")
+    Assert.assertEquals(ZERO, upd_awce.oneToTwo)
+    upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "22", "1")
+    Assert.assertEquals(ONE, upd_awce.oneToTwo)
+    upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "22", "2")
+    Assert.assertEquals(ONE, upd_awce.oneToTwo)
+    upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "32", "0")
+    Assert.assertEquals(ZERO, upd_awce.twoToThree)
+    upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "32", "1")
+    Assert.assertEquals(ONE, upd_awce.twoToThree)
+    upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "32", "2")
+    Assert.assertEquals(ONE, upd_awce.twoToThree)
+    upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "45", "0")
+    Assert.assertEquals(ZERO, upd_awce.threeToFour)
+    upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "45", "1")
+    Assert.assertEquals(ONE, upd_awce.threeToFour)
+    upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "45", "2")
+    Assert.assertEquals(ONE, upd_awce.threeToFour)
+  }
+
 
 }
 

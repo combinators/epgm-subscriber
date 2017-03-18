@@ -6,17 +6,14 @@ import com.microsoft.azure.documentdb.{ConnectionPolicy, ConsistencyLevel, Docum
 import scala.collection.JavaConverters._
 import org.sthapana.aggregation.dataobjects._
 
-
-/**
-  * Created by chocoklate on 18/2/17.
-  */
 class DocumentDbConnector(host:String, masterKey:String, databaseId:String, collectionId:String) {
 
   val documentClient = new DocumentClient(host,
     masterKey, ConnectionPolicy.GetDefault(),
     ConsistencyLevel.Session)
 
-  def getConsolidatedRecord(code:String) = {
+  def
+  getConsolidatedRecord(code:String) = {
     val r = documentClient.queryDocuments(
       "dbs/"+databaseId+"/colls/"+collectionId,
       "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" and tyrion.code=\""+code+"\"",
