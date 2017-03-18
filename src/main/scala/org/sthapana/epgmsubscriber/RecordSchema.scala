@@ -6,8 +6,9 @@ case class RecordSchema(schema: Schema) {
 
 
   def apply(rawRecord: String):Option[Record] = {
-    if(validateRecord(rawRecord))
-      Some(applySchemaNew(rawRecord,schema,List(),("",0)))
+    val puredRecord = purifyRecord(rawRecord)
+    if(validateRecord(puredRecord))
+      Some(applySchemaNew(puredRecord,schema,List(),("",0)))
     else Option.empty
   }
 
@@ -28,5 +29,11 @@ case class RecordSchema(schema: Schema) {
       else applySchemaNew(r,s.tail, (s.head._1,l) :: acc ,("",previous._2+s.head._2))
     }
 
-  def validateRecord(record: String):Boolean = schema.foldLeft(0)((acc, b) => acc + b._2) == record.length
+  def validateRecord(record: String):Boolean =
+    record.matches("""[\d]+""") &&
+      (schema.foldLeft(0)((acc, b) => acc + b._2) == record.length)
+
+  def purifyRecord(record: String):String =
+    record.filter(_.toString.matches("""[\d]"""))
+
 }

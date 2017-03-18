@@ -26,11 +26,19 @@ object SubscriberApp {
         }
 
 
+        def toWeightVal(rawWeight: String):String = (rawWeight.toDouble/1000).toString
+
+
+        def updateRecord(record: Record):Record =
+          record.map(x => if(x._1.equals("weight")) (x._1, toWeightVal(x._2)) else x)
+
         def insertAndAggregate(record: Record): Unit = {
           try {
-            az.getPreviousRecord(record)
+            val updRecord = updateRecord(record)
+            az.getPreviousRecord(updRecord)
           } catch {
-            case e: Exception => println("Error occured while inserting into database" + e.getMessage)
+//            case e: Exception => println("Error occured while inserting into database" + e.getMessage)
+            case e: Exception => println(e)
           }
         }
       }

@@ -14,7 +14,7 @@ object CommonUtils {
   }
 
   def decrementByOne(count: String):String = {
-    (count.toLong - 1).toString
+    (if(count.toLong <= 0) 0 else count.toLong - 1).toString
   }
 
 }
