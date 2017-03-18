@@ -46,8 +46,7 @@ class AzureDocumentDB(host: String, password: String, db: String, collection: St
 
     val upd = new UpdateEntity(recordAsMap("statecode"), recordAsMap("districtcode"),
       recordAsMap("projectcode"), recordAsMap("sectorcode"), recordAsMap("aanganwadicode"),
-      recordAsMap("whounderweight"), masterDoc.get("whounderweight").toString,
-      masterDoc.get("sex").toString, currentAge.toString, masterDoc.get("age").toString,
+      recordAsMap("whounderweight"), masterDoc.get("sex").toString, currentAge.toString,
       recordAsMap("month"), recordAsMap("year"))
     new ProcessingEngine().updateDB(upd)
   }
@@ -80,8 +79,8 @@ class AzureDocumentDB(host: String, password: String, db: String, collection: St
         combinedRecordAsMap("sectorcode"),
         combinedRecordAsMap("aanganwadicode"),
         combinedRecordAsMap("whounderweight"),
-        "-1", combinedRecordAsMap("sex"),
-        combinedRecordAsMap("age"), "-1",
+        combinedRecordAsMap("sex"),
+        combinedRecordAsMap("age"),
         combinedRecordAsMap("month"), combinedRecordAsMap("year"))
 
       new ProcessingEngine().updateDB(upd)

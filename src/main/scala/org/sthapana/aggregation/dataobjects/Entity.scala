@@ -5,8 +5,7 @@ package org.sthapana.aggregation.dataobjects
   */
 case class UpdateEntity(stateCode:String,districtCode:String,projectCode:String,
                         sectorCode:String,aanganwadiCode:String,currentGrade:String,
-                        previousGrade:String,gender:String,currentAge:String,
-                        previousAge:String,currentMonth:String,currentYear:String)
+                        gender:String,currentAge:String,currentMonth:String,currentYear:String)
 
 case class GradeWiseConsolidatedEntity(doctype:String, code:String,suw:String,muw:String,normal:String,total:String)
 

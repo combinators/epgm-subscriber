@@ -110,35 +110,6 @@ class ProcessingEngineTest {
     })
   }
 
-//  doctype
-//  code
-//  currentmonth
-//  currentyear
-//  suwcount
-//  muwcount
-//  normalcount
-//  totalcount
-//  malecount
-//  femalecount
-//  zerotoonecount
-//  onetotwocount
-//  twotothreecount
-//  threetofourcount
-//  fourtofivecount
-//  fivetosixcount
-//  januarycount
-//  februarycount
-//  marchcount
-//  aprilcount
-//  maycount
-//  junecount
-//  julycount
-//  augustcount
-//  septembercount
-//  octobercount
-//  novembercount
-//  decembercount
-
   @Test
   def itShouldTestMethod_UpdateIfMonthIsNotSame_(): Unit = {
     val tyrionMap: Map[String, String] = Map(
@@ -158,10 +129,10 @@ class ProcessingEngineTest {
       "octobercount" -> "30", "decembercount" -> "30"
     )
 
-    val updateEntityWithOutMonthChange: UpdateEntity = UpdateEntity("27", "", "", "", "", "2", "0", "M", "5", "4", "03", "17")
-    val updateEntityWithMonthChange: UpdateEntity = UpdateEntity("27", "", "", "", "", "2", "0", "M", "5", "4", "04", "17")
-    val updateEntityWithYearChange: UpdateEntity = UpdateEntity("27", "", "", "", "", "2", "0", "M", "5", "4", "01", "18")
-    val updateEntityWithMonthAndYearChange: UpdateEntity = UpdateEntity("27", "", "", "", "", "2", "0", "M", "5", "04", "4", "18")
+    val updateEntityWithOutMonthChange: UpdateEntity = UpdateEntity("27", "", "", "", "", "2", "M", "5", "03", "17")
+    val updateEntityWithMonthChange: UpdateEntity = UpdateEntity("27", "", "", "", "", "2", "M", "5", "04", "17")
+    val updateEntityWithYearChange: UpdateEntity = UpdateEntity("27", "", "", "", "", "2", "M", "5", "01", "18")
+    val updateEntityWithMonthAndYearChange: UpdateEntity = UpdateEntity("27", "", "", "", "", "2", "M", "5", "04", "18")
 
     val mapWithOutMonthChange = new ProcessingEngine().updateIfMonthIsNotSame((Option(tyrionMap),Option(new Document())),
       updateEntityWithOutMonthChange.currentMonth, updateEntityWithOutMonthChange.currentYear)
