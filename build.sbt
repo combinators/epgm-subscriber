@@ -1,5 +1,6 @@
+import sbtdocker.Instructions.Cmd
 
-lazy val root = (project in file(".")).
+lazy val root = (project in file(".")).enablePlugins(DockerPlugin).
   settings(
     name := "epgm-subscriber",
     version := "1.0",
@@ -24,4 +25,16 @@ libraryDependencies += "net.debasishg" %% "redisclient" % "3.3"
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
   case x => MergeStrategy.first
+}
+
+dockerfile in docker := {
+  val artifact:File = assembly.value
+  val artifactTargetPath = s"/app/${artifact.name}"
+
+  new Dockerfile {
+    from("ikaee/alpine-java8")
+    maintainer("ikaee")
+    add(artifact,artifactTargetPath)
+    entryPoint("java", "-jar", artifactTargetPath)
+  }
 }
