@@ -1,26 +1,29 @@
 package org.sthapana.aggregation.engine
 
 import com.google.gson.Gson
-import com.microsoft.azure.documentdb.{ConnectionPolicy, ConsistencyLevel, Document, DocumentClient}
+import com.microsoft.azure.documentdb._
 import org.junit.{Assert, Test}
 import org.sthapana.aggregation.dataobjects._
 import org.sthapana.aggregation.utils.{AgeWiseConsolidationUtils, GenderWiseConsolidationUtils, GradeWiseConsolidationUtils, MonthWiseConsolidationUtils}
 
 import scala.collection.JavaConverters._
-
+import org.sthapana._
 class ProcessingEngineTest {
 
-  val HOST = "https://epgm.documents.azure.com:443/"
-  val MASTER_KEY = "SlhyMCNEuU55HklqqibVpNAqi58tN5ZcBjYznR2SLUxNOsjNaEH7JT3kLsaB6K9mRFMtTrl10bx3oJYm9DfsAA=="
+  val HOST = dbHost
+  val MASTER_KEY = dbPassword
   val DATABASE_ID = "thewall"
   val COLLECTION_ID = "tyrion"
+  val db = documentClient.queryDatabases("SELECT * FROM root r WHERE r.id='" + dbName + "'", null).getQueryIterable.toList.get(0)
+  val col: DocumentCollection = documentClient.queryCollections(db.getSelfLink, "SELECT * FROM root r WHERE r.id='" + collectionName + "'", null).getQueryIterable.toList.get(0)
 
   val documentClient = new DocumentClient(HOST,
     MASTER_KEY, ConnectionPolicy.GetDefault(),
     ConsistencyLevel.Session)
 
   @Test
-  def itShouldGetMasterChildData(): Unit = {
+  def itShouldGetAllTypesOfData(): Unit = {
+
     val results1 = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
       "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" ",
@@ -34,11 +37,11 @@ class ProcessingEngineTest {
       "SELECT * FROM tyrion where tyrion.doctype=\"log\" ",
       //      "SELECT * FROM tyrion ",
       null).getQueryIterable().toList()
-
     println("log ===>" + results2)
 
     val results3 = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+
       "SELECT * FROM tyrion where tyrion.doctype=\"child\" ",
       //      "SELECT * FROM tyrion ",
       null).getQueryIterable().toList()
@@ -98,12 +101,15 @@ class ProcessingEngineTest {
 
   @Test
   def itShouldRemoveAllDashboardData(): Unit = {
-
+    val db = documentClient.queryDatabases("SELECT * FROM root r WHERE r.id='" + dbName + "'", null).getQueryIterable.toList.get(0)
+    val col: DocumentCollection = documentClient.queryCollections(db.getSelfLink, "SELECT * FROM root r WHERE r.id='" + collectionName + "'", null).getQueryIterable.toList.get(0)
     val documents = documentClient.queryDocuments(
-      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+      col.getSelfLink,
       "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" ",
       //      "SELECT * FROM tyrion ",
       null).getQueryIterable().asScala.toList
+    val ro = new RequestOptions()
+    ro.setPartitionKey(new PartitionKey("doctype"))
 
     documents.foreach(d => {
       documentClient.deleteDocument(d.getSelfLink(), null)

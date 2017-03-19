@@ -11,15 +11,19 @@ import org.sthapana.aggregation.dataobjects.UpdateEntity
 import org.sthapana.aggregation.engine.ProcessingEngine
 import org.sthapana.child.ChildRecord
 import org.sthapana.record.validation.validation.Validator
+import org.sthapana._
 
 class AzureDocumentDB(host: String, password: String, db: String, collection: String) {
   val LOG_DOC_TYPE = "log"
   val documentClient = new DocumentClient(host, password, ConnectionPolicy.GetDefault(), ConsistencyLevel.Session)
 
+  lazy val dbForLink = documentClient.queryDatabases("SELECT * FROM root r WHERE r.id='" + dbName + "'", null).getQueryIterable.toList.get(0)
+  lazy val col: DocumentCollection = documentClient.queryCollections(dbForLink.getSelfLink, "SELECT * FROM root r WHERE r.id='" + collectionName + "'", null).getQueryIterable.toList.get(0)
+
   def insertRecordInDatabase(record: Record) = {
-    val results = documentClient.queryDocuments("dbs/" + db + "/colls/" + collection,
+    val results = documentClient.queryDocuments(col.getSelfLink,
       "SELECT * FROM myCollection where myCollection.doctype=\"log\"  and myCollection.aanganwadicode=\"" + record("aanganwadicode") + "\" and myCollection.childcode=\"" + record("childcode") + "\" order by myCollection.recordnumber DESC",
-      null).getQueryIterable().toList;
+      null).getQueryIterable().toList
 
     if (results.size() == 0) {
       insertFirstRecord(record)
@@ -55,7 +59,7 @@ class AzureDocumentDB(host: String, password: String, db: String, collection: St
 
     def getRecordFromMasterData(): Record = {
       val recordAsMap = record
-      val results = documentClient.queryDocuments("dbs/" + db + "/colls/" + collection,
+      val results = documentClient.queryDocuments(col.getSelfLink,
         "SELECT * FROM myCollection where myCollection.doctype=\"child\" and myCollection.aanganwadicode=\"" + recordAsMap("aanganwadicode") + "\" and myCollection.childcode=\"" + recordAsMap("childcode") + "\"",
         null).getQueryIterable().toList;
       if (!results.isEmpty) {
@@ -89,7 +93,7 @@ class AzureDocumentDB(host: String, password: String, db: String, collection: St
   }
 
   def insert(childRecord: ChildRecord, docType: String, recordNumber: String): Document = documentClient.createDocument(
-    "dbs/" + db + "/colls/" + collection, new Document(new Gson().toJson(Marshaller(childRecord, docType, recordNumber))), null, false)
+    col.getSelfLink, new Document(new Gson().toJson(Marshaller(childRecord, docType, recordNumber))), null, false)
     .getResource
 
   private def getAgeInMonths(year: Int, month: Int, day: Int): Long = {

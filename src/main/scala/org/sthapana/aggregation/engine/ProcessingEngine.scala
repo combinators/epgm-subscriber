@@ -62,16 +62,14 @@ class ProcessingEngine {
       case None =>
         docDbConnector.insertConsolidatedRecord(tyrionEntity)
       case Some(_) => {
-        docDbConnector.deleteConsolidatedRecord(updateEntity.stateCode, document.get)
-        docDbConnector.insertConsolidatedRecord(tyrionEntity)
+        docDbConnector.updateConsolidatedRecord(document.get,tyrionEntity)
       }
     }
-    println("-------> record : " + record)
-    println("-------> tyrionEntity : " + tyrionEntity)
   }
 
   def updateIfMonthIsNotSame(tuple: (Option[Map[String, String]], Option[Document]),
                              currentMonth: String, currentYear: String): (Option[Map[String, String]], Option[Document]) = {
+    println("tuple update --- " + tuple)
     val output = tuple._1 match {
       case Some(te) if te.get("currentmonth").getOrElse("01").equals(currentMonth) => te
       case Some(te) if !te.get("currentmonth").getOrElse("01").equals(currentMonth) => {
