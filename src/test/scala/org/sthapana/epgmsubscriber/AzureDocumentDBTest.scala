@@ -22,10 +22,10 @@ class AzureDocumentDBTest {
         "wasting" -> "7",
         "stunting" -> "0",
         "minutes" -> "46",
-        "hours" -> "14")
+        "hours" -> "14").toMap
     //when
 
-    print(az.insert(data))
+//    print(az.insert(data))
 
     //then
   }
