@@ -1,16 +1,20 @@
 package org.sthapana.aggregation.engine
 
 import com.google.gson.Gson
-import com.microsoft.azure.documentdb.{ConnectionPolicy, ConsistencyLevel, Document, DocumentClient}
+import com.microsoft.azure.documentdb._
 import org.sthapana.aggregation.dataobjects._
 
 import scala.collection.JavaConverters._
+import org.sthapana._
 
 class DocumentDbConnector(host: String, masterKey: String, databaseId: String, collectionId: String) {
 
   val documentClient = new DocumentClient(host,
     masterKey, ConnectionPolicy.GetDefault(),
     ConsistencyLevel.Session)
+
+  lazy val db = documentClient.queryDatabases("SELECT * FROM root r WHERE r.id='" + dbName + "'",null).getQueryIterable.toList.get(0)
+  lazy val col: DocumentCollection = documentClient.queryCollections(db.getSelfLink,"SELECT * FROM root r WHERE r.id='" + collectionName + "'",null).getQueryIterable.toList.get(0)
 
   def getConsolidatedRecord(code: String) = {
     val r = documentClient.queryDocuments(
@@ -28,11 +32,10 @@ class DocumentDbConnector(host: String, masterKey: String, databaseId: String, c
     documentClient.deleteDocument(r.getSelfLink(), null)
   }
 
-  def insertConsolidatedRecord(tyrionEntity: TyrionEntity): Unit = {
-    val entityJson = new Gson().toJson(tyrionEntity)
-    val entityDocument = new Document(entityJson)
-    documentClient.createDocument(s"dbs/$databaseId/colls/$collectionId",
-      entityDocument, null, false).getResource()
-  }
+      def insertConsolidatedRecord(tyrionEntity: TyrionEntity): Unit = {
+        val entityJson = new Gson().toJson(tyrionEntity)
+        val entityDocument = new Document(entityJson)
+        documentClient.createDocument(col.getSelfLink, entityDocument, null,false).getResource()
+      }
 
-}
+  }

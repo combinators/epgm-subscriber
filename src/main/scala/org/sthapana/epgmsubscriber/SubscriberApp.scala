@@ -1,42 +1,43 @@
 package org.sthapana.epgmsubscriber
 
 
+
 import com.rabbitmq.client.{AMQP, DefaultConsumer, Envelope}
+import org.sthapana._
 
 object SubscriberApp {
   def main(args: Array[String]): Unit = {
 
-    if (args.isEmpty) {
-      println("Please provide IP in docker run e.g. docker run <image> 0.0.0.0")
-      System.exit(0)
-    }
-    val QUEUE_NAME: String = "epgm_logdata"
-    val channel = ChannelFactory("localhost", QUEUE_NAME)
-    val az = AzureDocumentDB("https://epgm.documents.azure.com:443/", "SlhyMCNEuU55HklqqibVpNAqi58tN5ZcBjYznR2SLUxNOsjNaEH7JT3kLsaB6K9mRFMtTrl10bx3oJYm9DfsAA==", "thewall", "tyrion")
-
-    val consumer = new DefaultConsumer(channel) {
-      override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
-        val rawData = new String(body, "UTF-8")
-        SchemaFactory.type1.apply(rawData) match {
-          case Some(log) => insertAndAggregate(log)
-          case _ => print(rawData)
-        }
+      if(args.isEmpty) {
+        println("Please provide IP in docker run e.g. docker run <image> 0.0.0.0")
+        System.exit(0)
       }
 
-      def toWeightVal(rawWeight: String): String = (rawWeight.toDouble / 1000).toString
+      val channel = ChannelFactory(args(0), queueName)
+      val az = AzureDocumentDB(dbHost, dbPassword, dbName, collectionName)
 
-      def updateRecord(record: Record): Record =
-        record.map(x => if (x._1.equals("weight")) (x._1, toWeightVal(x._2)) else x)
+      val consumer = new DefaultConsumer(channel) {
+        override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
+          val rawData = new String(body, "UTF-8")
+          SchemaFactory.type1.apply(rawData) match {
+            case Some(log) => insertAndAggregate(log)
+            case _ => print(rawData)
+          }
+        }
 
-      def insertAndAggregate(record: Record): Unit = {
-        try {
-          az.insertRecordInDatabase(record)
-        } catch {
-          case e: Exception => println("Error occured while inserting into database" + e.getMessage)
+
+        def insertAndAggregate(record: Record): Unit = {
+          try {
+            az.insertRecordInDatabase(record)
+          } catch {
+            case e: Exception => println("Error occured while inserting into database" + e.getMessage)
+          }
         }
       }
-    }
-    channel.basicConsume(QUEUE_NAME, true, consumer)
-  }
+          channel.basicConsume(queueName, true, consumer)
+
+      }
+
 
 }
+

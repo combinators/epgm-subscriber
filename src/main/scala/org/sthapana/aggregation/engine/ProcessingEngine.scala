@@ -3,15 +3,17 @@ package org.sthapana.aggregation.engine
 import com.microsoft.azure.documentdb.Document
 import org.sthapana.aggregation.dataobjects._
 import org.sthapana.aggregation.utils.{AgeWiseConsolidationUtils, GenderWiseConsolidationUtils, GradeWiseConsolidationUtils, MonthWiseConsolidationUtils}
+import org.sthapana._
 
 class ProcessingEngine {
 
   def updateDB(updateEntity: UpdateEntity): Unit = {
 
     val docDbConnector = new DocumentDbConnector(
-      "https://epgm.documents.azure.com:443/",
-      "SlhyMCNEuU55HklqqibVpNAqi58tN5ZcBjYznR2SLUxNOsjNaEH7JT3kLsaB6K9mRFMtTrl10bx3oJYm9DfsAA==",
-      "thewall", "tyrion")
+      dbHost,
+      dbPassword,
+      dbName,
+      collectionName)
 
     val (record, document) = updateIfMonthIsNotSame(docDbConnector.getConsolidatedRecord(updateEntity.stateCode), updateEntity.currentMonth, updateEntity.currentYear)
     val gradeEntity = record match {
