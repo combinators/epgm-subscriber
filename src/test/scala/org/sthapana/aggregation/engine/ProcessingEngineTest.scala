@@ -14,12 +14,12 @@ class ProcessingEngineTest {
   val MASTER_KEY = dbPassword
   val DATABASE_ID = "thewall"
   val COLLECTION_ID = "tyrion"
-  val db = documentClient.queryDatabases("SELECT * FROM root r WHERE r.id='" + dbName + "'", null).getQueryIterable.toList.get(0)
-  val col: DocumentCollection = documentClient.queryCollections(db.getSelfLink, "SELECT * FROM root r WHERE r.id='" + collectionName + "'", null).getQueryIterable.toList.get(0)
-
   val documentClient = new DocumentClient(HOST,
     MASTER_KEY, ConnectionPolicy.GetDefault(),
     ConsistencyLevel.Session)
+  val db = documentClient.queryDatabases("SELECT * FROM root r WHERE r.id='" + dbName + "'", null).getQueryIterable.toList.get(0)
+  val col: DocumentCollection = documentClient.queryCollections(db.getSelfLink, "SELECT * FROM root r WHERE r.id='" + collectionName + "'", null).getQueryIterable.toList.get(0)
+
 
   @Test
   def itShouldGetAllTypesOfData(): Unit = {
@@ -98,15 +98,14 @@ class ProcessingEngineTest {
     //given
 
     //when
-    val tyrionEntity = TyrionEntity("dashboard","27","24","90","175",
-      "289","61","53","0","6","41","63",
-      "0","0","0","114","0","0","0","0",
-      "0","0","0","0","0","0","02","17")
+    val tyrionEntity = TyrionEntity("dashboard","27","0","0","0",
+      "0","0","0","0","0","0","0",
+      "0","0","0","0","0","0","0","0",
+      "0","0","0","0","0","0","01","17")
 
     val entityJson = new Gson().toJson(tyrionEntity)
     val entityDocument = new Document(entityJson)
-
-    documentClient.createDocument(s"dbs/$DATABASE_ID/colls/$COLLECTION_ID",
+    documentClient.createDocument(s"dbs/$dbName/colls/$collectionName",
       entityDocument, null,false).getResource()
   }
 
@@ -388,6 +387,27 @@ class ProcessingEngineTest {
     Assert.assertEquals(ONE, upd_awce.threeToFour)
     upd_awce = new AgeWiseConsolidationUtils().updateAgeWiseConsolidated(awce, "45", "2")
     Assert.assertEquals(ONE, upd_awce.threeToFour)
+  }
+
+  @Test
+  def remove(): Unit ={
+    val d1 = TyrionEntity("dashboard","27","0","0","0",
+      "0","0","0","0","0","0","0",
+      "0","0","0","0","0","0","0","0",
+      "0","0","0","0","0","0","01","17")
+    val d2 = TyrionEntity("dashboard","27","0","0","0",
+      "0","0","0","0","0","0","0",
+      "0","0","0","0","0","0","0","0",
+      "0","0","0","0","0","0","04","17")
+    val d3 = TyrionEntity("dashboard","27","0","0","0",
+      "0","0","0","0","0","0","0",
+      "0","0","0","0","0","0","0","0",
+      "0","0","0","0","0","0","04","18")
+
+    val list = d1 :: d2 :: d3 :: Nil
+
+    val te = list.maxBy(d => (d.currentyear + d.currentmonth).toInt)
+    println(te)
   }
 
 

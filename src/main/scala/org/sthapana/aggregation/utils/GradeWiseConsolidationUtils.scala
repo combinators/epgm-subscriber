@@ -15,7 +15,7 @@ class GradeWiseConsolidationUtils() {
       case "0" => GradeWiseConsolidatedEntity("dashboard", gwce.code, gwce.suw, gwce.muw, CommonUtils.incrementByOne(gwce.normal), CommonUtils.incrementByOne(gwce.total))
       case "1" => GradeWiseConsolidatedEntity("dashboard", gwce.code, gwce.suw, CommonUtils.incrementByOne(gwce.muw), gwce.normal, CommonUtils.incrementByOne(gwce.total))
       case "2" => GradeWiseConsolidatedEntity("dashboard", gwce.code, CommonUtils.incrementByOne(gwce.suw), gwce.muw, gwce.normal, CommonUtils.incrementByOne(gwce.total))
-      case "_" => GradeWiseConsolidatedEntity("dashboard", gwce.code, gwce.suw, gwce.muw, gwce.normal, gwce.total)
+      case _ => GradeWiseConsolidatedEntity("dashboard", gwce.code, gwce.suw, gwce.muw, gwce.normal, gwce.total)
     }
     updatedGWCE
   }

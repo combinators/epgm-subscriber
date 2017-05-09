@@ -30,7 +30,10 @@ object SubscriberApp {
           try {
             az.insertRecordInDatabase(record)
           } catch {
-            case e: Exception => println("Error occured while inserting into database" + e.getMessage)
+            case e: Exception => {
+              println("Error occured while inserting into database "+ e)
+              e.printStackTrace()
+            }
           }
         }
       }

@@ -19,11 +19,10 @@ class DocumentDbConnector(host: String, masterKey: String, databaseId: String, c
     val r = documentClient.queryDocuments(
       col.getSelfLink,
       "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" and tyrion.code=\"" + code + "\"",
-      null).getQueryIterable.asScala.headOption
-    (r match {
-      case None => None
-      case Some(x) => Some(x.getHashMap.asScala.map(x => (x._1, x._2.toString)).toMap)
-    }, r)
+      null).getQueryIterable.asScala.toList
+      .maxBy(d => (d.get("currentyear").toString + d.get("currentmonth").toString).toInt)
+
+    (Some(r.getHashMap.asScala.map(x => (x._1, x._2.toString)).toMap),Some(r))
   }
 
   def updateConsolidatedRecord(old:Document,tyrionEntity:TyrionEntity): Unit = {

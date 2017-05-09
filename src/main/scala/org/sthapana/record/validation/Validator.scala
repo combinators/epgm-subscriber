@@ -8,6 +8,20 @@ object validation {
   object Validator {
 
     trait Malformed
+    val stateWiseValidations: Map[StateCode, List[Validator]] = {
+      Map(
+        "27" -> List(
+          sameMonth,
+          dayGap(20),
+          ageLimit(72)
+        ),
+        "52" -> List(
+          sameMonth,
+          dayGap(22)
+        )
+      )
+    }
+
     object Malformed {
 
       case object SameMonth extends Malformed
@@ -18,22 +32,10 @@ object validation {
 
     }
 
-    val stateWiseValidations: Map[StateCode, List[Validator]] = Map(
-      "27" -> List(
-        sameMonth,
-        dayGap(20),
-        ageLimit(72)
-      ),
-      "52" -> List(
-        sameMonth,
-        dayGap(22)
-      )
-    )
-
     type StateCode = String
     type Validator = (ChildRecord, ChildRecord) => Either[ChildRecord, (ChildRecord, Malformed)]
 
-    val sameMonth: Validator = (c1, c2) => {
+    def sameMonth: Validator = (c1, c2) => {
       val c1LogDate: DateTime = new DateTime(c1.year.toInt, c1.month.toInt, c1.day.toInt, c1.hours.toInt, c1.minutes.toInt)
       val c2LogDate: DateTime = new DateTime(c2.year.toInt, c2.month.toInt, c2.day.toInt, c2.hours.toInt, c2.minutes.toInt)
       if (isMonthYearSame(c1LogDate, c2LogDate))

@@ -9,6 +9,8 @@ class ProcessingEngine {
 
   def updateDB(updateEntity: UpdateEntity): Unit = {
 
+    println("updating dashboard count")
+
     val docDbConnector = new DocumentDbConnector(
       dbHost,
       dbPassword,
@@ -58,11 +60,11 @@ class ProcessingEngine {
       gradeEntity.total, genderEntity.male, genderEntity.female, ageEntity.zeroToOne, ageEntity.oneToTwo, ageEntity.twoToThree, ageEntity.threeToFour,
       ageEntity.fourToFive, ageEntity.fiveToSix, monthEntity.jan, monthEntity.feb, monthEntity.mar, monthEntity.apr, monthEntity.may, monthEntity.jun,
       monthEntity.jul, monthEntity.aug, monthEntity.sep, monthEntity.oct, monthEntity.nov, monthEntity.dec, monthEntity.currmonth, monthEntity.curryear)
-    record match {
+    record.get.get("insert") match {
       case None =>
-        docDbConnector.insertConsolidatedRecord(tyrionEntity)
-      case Some(_) => {
         docDbConnector.updateConsolidatedRecord(document.get,tyrionEntity)
+      case Some(_) => {
+        docDbConnector.insertConsolidatedRecord(tyrionEntity)
       }
     }
   }
@@ -89,7 +91,7 @@ class ProcessingEngine {
           case k if k.equals("fourtofivecount") => "fourtofivecount" -> "0"
           case k if k.equals("fivetosixcount") => "fivetosixcount" -> "0"
           case k => k -> te.get(k).get
-        })
+        }) ++ Map("insert" -> "true")
       }
     }
     (Option(output), tuple._2)
