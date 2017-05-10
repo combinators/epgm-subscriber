@@ -18,6 +18,10 @@ object validation {
         "52" -> List(
           sameMonth,
           dayGap(22)
+        ),
+        "98" -> List(
+          sameMonth,
+          dayGap(22)
         )
       )
     }
