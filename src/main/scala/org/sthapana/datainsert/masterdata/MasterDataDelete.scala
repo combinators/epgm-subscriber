@@ -48,11 +48,10 @@ object DeleteAllLog_DashboardDataAndInsertDashboardDataState_27 extends App{
     documentClient.deleteDocument(document.getSelfLink, null)
   })
 
-
   val tyrionEntity = TyrionEntity("dashboard","27","0","0","0",
     "0","0","0","0","0","0","0",
     "0","0","0","0","0","0","0","0",
-    "0","0","0","0","0","0","01","17")
+    "0","0","0","0","0","0","04","18")
 
   val entityJson = new Gson().toJson(tyrionEntity)
   val entityDocument = new Document(entityJson)

@@ -90,25 +90,25 @@ object MasterDataInsert_27 extends App {
 
 
     import DataInsert._
-    insertMasterChildData(MasterChildDataEntity("child","05","05","2009","","M","0","001","","MAHESH","M KALYANKAR","27511010507"))
+    insertMasterChildData(MasterChildDataEntity("child","05","05","2018","","M","0","001","","MAHESH","M KALYANKAR","27511010507"))
 
-    insertMasterChildData(MasterChildDataEntity("child","04","06","2009","","M","0","002","","VITTAL","D KALYANKAR","27511010507"))
+    insertMasterChildData(MasterChildDataEntity("child","04","06","2017","","M","0","002","","VITTAL","D KALYANKAR","27511010507"))
 
-    insertMasterChildData(MasterChildDataEntity("child","30","06","2009","","F","0","003","","RAGINI","D KALYANKAR","27511010507"))
+    insertMasterChildData(MasterChildDataEntity("child","30","06","2016","","F","0","003","","RAGINI","D KALYANKAR","27511010507"))
 
-    insertMasterChildData(MasterChildDataEntity("child","01","08","2009","","F","0","004","","JANHAVI","K KALYANKAR","27511010507"))
+    insertMasterChildData(MasterChildDataEntity("child","01","08","2015","","F","0","004","","JANHAVI","K KALYANKAR","27511010507"))
 
-    insertMasterChildData(MasterChildDataEntity("child","04","08","2009","","F","0","005","","SANIKA","D KALYANKAR","27511010507"))
+    insertMasterChildData(MasterChildDataEntity("child","04","08","2014","","F","0","005","","SANIKA","D KALYANKAR","27511010507"))
 
-    insertMasterChildData(MasterChildDataEntity("child","16","08","2009","","F","0","006","","SAKSHI","S KALYANKAR","27511010507"))
+    insertMasterChildData(MasterChildDataEntity("child","16","08","2013","","F","0","006","","SAKSHI","S KALYANKAR","27511010507"))
 
-    insertMasterChildData(MasterChildDataEntity("child","22","08","2009","","M","0","007","","OMPRAKASH","D KALYANKAR","27511010507"))
+    insertMasterChildData(MasterChildDataEntity("child","22","08","2012","","M","0","007","","OMPRAKASH","D KALYANKAR","27511010507"))
 
-    insertMasterChildData(MasterChildDataEntity("child","29","09","2009","","F","0","008","","SHRUSHTI","G KALYANKAR","27511010507"))
+    insertMasterChildData(MasterChildDataEntity("child","29","09","2001","","F","0","008","","SHRUSHTI","G KALYANKAR","27511010507"))
 
     insertMasterChildData(MasterChildDataEntity("child","24","09","2009","","M","0","009","","SHANKAR","M KALYANKAR","27511010507"))
 
-    insertMasterChildData(MasterChildDataEntity("child","07","10","2009","","M","0","010","","ARYAN","D KALYANKAR","27511010507"))
+    insertMasterChildData(MasterChildDataEntity("child","07","10","2001","","M","0","010","","ARYAN","D KALYANKAR","27511010507"))
 
     insertMasterChildData(MasterChildDataEntity("child","20","10","2009","","M","0","011","","MAYUR","M KALYANKAR","27511010507"))
 

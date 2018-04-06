@@ -9,7 +9,11 @@ case class RecordSchema(schema: Schema) {
     else Option.empty
   }
 
-  def validateRecord(record: String): Boolean = schema.foldLeft(0)((acc, b) => acc + b._2) == record.length
+  def validateRecord(record: String): Boolean = {
+    println("validating rawdata length : ", record.length);
+    println("validating rawdata length : ", record.substring(42));
+    schema.foldLeft(0)((acc, b) => acc + b._2) == record.length
+  }
 
   private[this] def applySchemaNew(rawRecord: String, s: Schema, acc: Record, previous: (String, Int)): Record =
     if (rawRecord.isEmpty) acc

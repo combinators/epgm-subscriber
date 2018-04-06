@@ -3,8 +3,8 @@ package org
 package object sthapana {
   val dbName = "thewall"
   val collectionName = "tyrion"
-  val dbHost = "https://epgmdbs.documents.azure.com:443/"
-  val dbPassword = "yBoqCjpYeTprTCI1hUtuyzAvLcqBclbibIHkpntNWC4vs1La2sWGS3ewapSpayGH4syAbdJK35pli89g1rUFZw=="
+  val dbHost = "https://epgm.documents.azure.com:443/"
+  val dbPassword = "KY0qwksz9NUPbfHW2j7XdKmHn5cmR3Iu2dAQPYstWEdhcTxxNY9C08qcWGVQXmoO9nQRnxPnq7DAoY8Ep6XZiA=="
 
   val queueName = "epgm_logdata"
 }

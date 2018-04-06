@@ -9,7 +9,7 @@ class ProcessingEngine {
 
   def updateDB(updateEntity: UpdateEntity): Unit = {
 
-    println("updating dashboard count")
+    println("UpdateEntity:  ", updateEntity);
 
     val docDbConnector = new DocumentDbConnector(
       dbHost,

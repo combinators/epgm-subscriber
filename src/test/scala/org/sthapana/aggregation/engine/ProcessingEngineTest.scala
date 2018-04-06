@@ -23,29 +23,37 @@ class ProcessingEngineTest {
 
   @Test
   def itShouldGetAllTypesOfData(): Unit = {
-
-    val results1 = documentClient.queryDocuments(
+    val dashboard = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
       "SELECT * FROM tyrion where tyrion.doctype=\"dashboard\" ",
-      //      "SELECT * FROM tyrion ",
+      //      "SELECT * FROM tyrsion ",
       null).getQueryIterable().toList()
 
-    println("dashboard ===>" + results1)
+    println("dashboard ===>" + dashboard)
 
-    val results2 = documentClient.queryDocuments(
+    val log = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
       "SELECT * FROM tyrion where tyrion.doctype=\"log\" ",
       null).getQueryIterable().toList()
-    println("log ===>" + results2)
+    println("log ===>" + log)
 
-    val results3 = documentClient.queryDocuments(
+    val child = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
 
       "SELECT * FROM tyrion where tyrion.doctype=\"child\" ",
       //      "SELECT * FROM tyrion ",
       null).getQueryIterable().toList()
 
-    println("child ===>" + results3)
+    //println("child ===>" + child)
+
+    val aanganwadi = documentClient.queryDocuments(
+      "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
+
+      "SELECT * FROM tyrion where tyrion.doctype=\"aanganwadi\" ",
+      //      "SELECT * FROM tyrion ",
+      null).getQueryIterable().toList()
+
+    //println("aanganwadi ===>" + aanganwadi)
   }
 
   @Test
@@ -55,8 +63,7 @@ class ProcessingEngineTest {
     //when
     val logRecords = documentClient.queryDocuments(
       "dbs/" + DATABASE_ID + "/colls/" + COLLECTION_ID,
-      "SELECT * FROM tyrion where tyrion.sex='F' and tyrion.aanganwadicode=\"27511010507\" and " +
-        "tyrion.doctype=\"log\" ",
+      "SELECT * FROM myCollection where myCollection.doctype=\"log\"",
       null).getQueryIterable().toList()
 
     //then
